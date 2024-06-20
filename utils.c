@@ -6,13 +6,13 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:43:38 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/16 18:12:37 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/20 12:44:37 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-double	atod(char *s)
+double	ft_atod(char *s)
 {
 	long double	c;
 	double		fract_n;

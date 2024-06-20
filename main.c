@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/16 17:14:32 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/20 13:23:53 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,19 @@ int	main(int argc, char **argv)
 	if (argc == 5 || argc == 6)
 	{
 		if (argv[1] != NULL)
-			nb_phil = atoi(argv[1]);
+			nb_phil = ft_atoi(argv[1]);
 		if (argv[2] != NULL)
-			fil.time_die = atod(argv[2]);
+			fil.time_die = ft_atod(argv[2]);
 		if (argv[3] != NULL)
-			fil.time_eat = atod(argv[3]);
+			fil.time_eat = ft_atod(argv[3]);
 		if (argv[4] != NULL)
-			fil.time_sleep = atod(argv[4]);
+			fil.time_sleep = ft_atod(argv[4]);
 		if (argc == 6)
 			if (argv[5] != NULL)
-				fil.eating_times = atoi(argv[5]);
+				fil.eating_times = ft_atoi(argv[5]);
 	}
 	else 
 		write (1, "wrong input", 11);
-	create_threads(nb_phil);
+	create_threads(nb_phil, &fil);
 	return (0);
 }
