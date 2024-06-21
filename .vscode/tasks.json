@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "cc",
+            "args": [
+                "*.c", // Include all C source files
+                "*.h", // Include all header files for dependency tracking
+                "-g"   // Generate debug information
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compile all .c and .h files using cc"
+        }
+    ]
+}
