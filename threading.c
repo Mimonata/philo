@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/23 19:03:23 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/23 19:27:11 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,13 @@ void	*start_routine(void *arg)
 	printf("nb_phil from %d is %d\n", fil->index, fil->data->nb_phil);
 	return (fil);
 }
+void	init_philot(philo_t *f, dinner_t *d)
+{
+	f->chopsticks[0] = 0;
+	f->chopsticks[1] = 0;
+	f->last_eat = 0LL;
+	f->data = d;
+}
 
 int	create_threads(int nb_phil, dinner_t *d)
 {
@@ -50,7 +57,8 @@ int	create_threads(int nb_phil, dinner_t *d)
 	while (i < nb_phil)
 	{
 		f[i].index = i + 1;
-		f[i].data = d;
+		init_philot(&f[i], d);
+		
 		if (pthread_create(&th[i], NULL, &start_routine, &f[i]) != 0)
 		{
 			write(1, "can't create thread", 18);
