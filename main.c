@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/21 17:20:03 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/23 17:02:28 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ int	main(int argc, char **argv)
 {
 	dinner_t	d;
 	
-	init_dinner(d);	
+	init_dinner(d);
+	//isdigit or input check or error return from atodi	
 	if (argc == 5 || argc == 6)
 	{
 		if (argv[1] != NULL)

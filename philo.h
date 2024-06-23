@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/21 16:49:29 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/23 16:43:48 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,6 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-typedef struct philo_s
-{
-	int		index;
-	int		chopsticks[2];
-	long long last_eat;
-}				philo_t;
-
 typedef struct	dinner_s
 {
 	int		nb_phil;
@@ -34,6 +27,14 @@ typedef struct	dinner_s
 	double	time_sleep;
 	int		eating_times;		
 }				dinner_t;
+
+typedef struct philo_s
+{
+	int		index;
+	int		chopsticks[2];
+	long long last_eat;
+	dinner_t	*data;
+}				philo_t;
 
 int	create_threads(int nb_phil, dinner_t *d);
 
