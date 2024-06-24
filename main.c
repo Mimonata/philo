@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/23 17:02:28 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/24 19:16:42 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ void	init_dinner(dinner_t d)
 	d.time_die = 0.0;
 	d.time_eat = 0.0;
 	d.time_sleep = 0.0;
+	d.forks = malloc((d.nb_phil * sizeof(int)) + 1);
+	memset(d.forks, '0', d.nb_phil);
 }
 
 int	main(int argc, char **argv)

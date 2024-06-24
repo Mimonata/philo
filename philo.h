@@ -6,13 +6,14 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/23 16:43:48 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/24 19:09:47 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <string.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -26,12 +27,12 @@ typedef struct	dinner_s
 	double	time_eat;
 	double	time_sleep;
 	int		eating_times;		
+	int		*forks;
 }				dinner_t;
 
 typedef struct philo_s
 {
 	int		index;
-	int		chopsticks[2];
 	long long last_eat;
 	dinner_t	*data;
 }				philo_t;

@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/23 19:27:11 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/24 19:12:37 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,25 +24,18 @@ void	*start_routine(void *arg)
 {
 	long long	ms;
 	philo_t	*fil;
+	pthread_mutex_t	mutex;
+	
 	fil = (philo_t *)arg;
-
-	if (fil->index % 2 == 0)
-		fil->data->time_eat += 2;
-	else
-		fil->data->time_die += 3;  
-	printf("%lld this is thread %d \n", timestamp(), fil->index);
-	printf("%lld this is the time to die %f \n", timestamp(), fil->data->time_die);
-	printf("this is the time to eat %f \n", fil->data->time_eat);
-	printf("this is the time to sleep %f \n", fil->data->time_sleep);
-	printf("nb_phil from %d is %d\n", fil->index, fil->data->nb_phil);
-	return (fil);
+	pthread_mutex_init(&mutex, NULL);
+	return (arg);
 }
-void	init_philot(philo_t *f, dinner_t *d)
+
+void	init_philot(philo_t *f, dinner_t *d, int i)
 {
-	f->chopsticks[0] = 0;
-	f->chopsticks[1] = 0;
 	f->last_eat = 0LL;
 	f->data = d;
+	f->index = i + 1;
 }
 
 int	create_threads(int nb_phil, dinner_t *d)
@@ -56,8 +49,7 @@ int	create_threads(int nb_phil, dinner_t *d)
 	i = 0;
 	while (i < nb_phil)
 	{
-		f[i].index = i + 1;
-		init_philot(&f[i], d);
+		init_philot(&f[i], d, i);
 		
 		if (pthread_create(&th[i], NULL, &start_routine, &f[i]) != 0)
 		{
