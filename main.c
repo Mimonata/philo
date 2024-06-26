@@ -19,8 +19,6 @@ void	init_dinner(dinner_t d)
 	d.time_die = 0.0;
 	d.time_eat = 0.0;
 	d.time_sleep = 0.0;
-	d.forks = malloc((d.nb_phil * sizeof(int)) + 1);
-	memset(d.forks, '0', d.nb_phil);
 }
 
 int	main(int argc, char **argv)
@@ -45,6 +43,7 @@ int	main(int argc, char **argv)
 	}
 	else 
 		write (1, "wrong input", 11);
+	d.forks = malloc((d.nb_phil * sizeof(pthread_mutex_t)));
 	create_threads(d.nb_phil, &d);
 	return (0);
 }

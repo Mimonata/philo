@@ -27,7 +27,7 @@ typedef struct	dinner_s
 	double	time_eat;
 	double	time_sleep;
 	int		eating_times;		
-	int		*forks;
+	pthread_mutex_t		*forks;
 }				dinner_t;
 
 typedef struct philo_s
