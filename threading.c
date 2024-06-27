@@ -20,7 +20,7 @@ long	timestamp(void)
 	return ((tv.tv_sec * 1000L) + (tv.tv_usec / 1000L));
 }	
 
-void	take_forks(philo_t *f)
+void	take_forks(philo_t *f, long start)
 {
 	int	left;
 	int	right;
@@ -32,24 +32,25 @@ void	take_forks(philo_t *f)
 	right = f->index;
 	pthread_mutex_init(&f->data->forks[left], NULL);
 	pthread_mutex_init(&f->data->forks[right], NULL);
-	if (f->index % 2) //how to keep a fork an amount of time
+	if (f->index % 2) 
 	{
 		pthread_mutex_lock(&f->data->forks[left]);
-		printf("%ld %d has taken left fork\n", timestamp(), f->index);
+		printf("%ld %d has taken left fork\n", timestamp() - start, f->index);
 		pthread_mutex_unlock(&f->data->forks[left]);
 		pthread_mutex_lock(&f->data->forks[right]);
-		printf("%ld %d has taken right fork\n", timestamp(), f->index);
+		printf("%ld %d has taken right fork\n", timestamp() - start, f->index);
 		pthread_mutex_unlock(&f->data->forks[right]);
 	}
 	else
 	{
 		pthread_mutex_lock(&f->data->forks[right]);
-		printf("%ld %d has taken right fork\n", timestamp(), f->index);
+		printf("%ld %d has taken right fork\n", timestamp() - start, f->index);
 		pthread_mutex_unlock(&f->data->forks[right]);
 		pthread_mutex_lock(&f->data->forks[left]);
-		printf("%ld %d has taken left fork\n", timestamp(), f->index);
+		printf("%ld %d has taken left fork\n", timestamp() - start, f->index);
 		pthread_mutex_unlock(&f->data->forks[left]);
 	}
+	
 }
 
 void	*start_routine(void *arg)
@@ -60,7 +61,7 @@ void	*start_routine(void *arg)
 	f = (philo_t *)arg;
 	start = timestamp();
 	while (timestamp() - start < f->data->time_die)
-	take_forks(f);
+		take_forks(f, start);
 	return (arg);
 }
 
