@@ -44,6 +44,8 @@ int	main(int argc, char **argv)
 	else 
 		write (1, "wrong input", 11);
 	d.forks = malloc((d.nb_phil * sizeof(pthread_mutex_t)));
+	d.chopst = malloc((d.nb_phil * sizeof(int)));
+	memset(d.chopst, 0, nb_phil * sizeof(int));
 	create_threads(d.nb_phil, &d);
 	return (0);
 }
