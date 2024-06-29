@@ -50,14 +50,25 @@ void	take_forks(philo_t *f, long start, int left, int right)
 		f->data->chopst[left] = f->index;
 	}
 	if (f->data->chopst[left] == f->index && f->data->chopst[right] == f->index)
-	{
-		printf("%ld %d is eating", time, f->index);
-		while (timestamp() - time < f->data->time_eat)
-			usleep(100);
-		f->last_eat = timestamp();
-	}
+		eating(timestamp() - start, f, left, right);
 	else
+		thinking(timestamp() - start, f);
+}
+
+void	thinking(long time, philo_t *f)
+{
+	printf("%ld %d is thinking", time, f->index);
+}
+
+
+void	eating(long time, philo_t *f, int left, int right)
+{
+	printf("%ld %d is eating", time, f->index);
+	while (timestamp() - time < f->data->time_eat)
+		usleep(100);
+	f->last_eat = timestamp();
 	release_forks(f, left, right);
+	sleeping();
 }
 
 void	*start_routine(void *arg)
