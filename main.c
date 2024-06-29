@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/24 19:16:42 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/29 13:57:10 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	main(int argc, char **argv)
 		write (1, "wrong input", 11);
 	d.forks = malloc((d.nb_phil * sizeof(pthread_mutex_t)));
 	d.chopst = malloc((d.nb_phil * sizeof(int)));
-	memset(d.chopst, 0, nb_phil * sizeof(int));
+	memset(d.chopst, 0, d.nb_phil * sizeof(int));
 	create_threads(d.nb_phil, &d);
 	return (0);
 }

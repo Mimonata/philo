@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/26 19:10:22 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/29 14:15:27 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct	dinner_s
 typedef struct philo_s
 {
 	int		index;
+	int		left;
 	long	last_eat;
 	dinner_t	*data;
 }				philo_t;

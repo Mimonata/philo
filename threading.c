@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/26 19:32:57 by spitul           ###   ########.fr       */
+/*   Updated: 2024/06/29 14:19:59 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,46 @@ long	timestamp(void)
 	return ((tv.tv_sec * 1000L) + (tv.tv_usec / 1000L));
 }	
 
+void	thinking(long time, philo_t *f)
+{
+	printf("%ld %d is thinking\n", time, f->index);
+}
+
+void	sleeping(long time, philo_t *f)
+{
+	printf("%ld %d is sleeping\n", time, f->index);
+	while (timestamp() - time < f->data->time_sleep)
+		usleep(1);
+	take_forks(f, f->last_eat, )
+}
+
 void	release_forks(philo_t *f, int left, int right)
 {
 	pthread_mutex_unlock(&f->data->forks[left]);
 	pthread_mutex_unlock(&f->data->forks[right]);
 }
 
+void	eating(long time, philo_t *f, int right)
+{
+	printf("%ld %d is eating\n", time, f->index);
+	while (timestamp() - time < f->data->time_eat)
+		usleep(1);
+	f->last_eat = timestamp();
+	release_forks(f, f->left, right);
+	sleeping();
+}
 void	take_forks(philo_t *f, long start, int left, int right)
 {
 	long	time;
+	int		right;
 	
+	right = f->index;
 	time = timestamp() - start;
 	if (f->index % 2) 
 	{
-		pthread_mutex_lock(&f->data->forks[left]);
+		pthread_mutex_lock(&f->data->forks[f->left]);
 		printf("%ld %d has taken left fork\n", time, f->index);
-		f->data->chopst[left] = f->index;
+		f->data->chopst[f->left] = f->index;
 		pthread_mutex_lock(&f->data->forks[right]);
 		printf("%ld %d has taken right fork\n", time, f->index);
 		f->data->chopst[right] = f->index;
@@ -45,30 +69,14 @@ void	take_forks(philo_t *f, long start, int left, int right)
 		pthread_mutex_lock(&f->data->forks[right]);
 		printf("%ld %d has taken right fork\n", time, f->index);
 		f->data->chopst[right] = f->index;
-		pthread_mutex_lock(&f->data->forks[left]);
+		pthread_mutex_lock(&f->data->forks[f->left]);
 		printf("%ld %d has taken left fork\n", time, f->index);
-		f->data->chopst[left] = f->index;
+		f->data->chopst[f->left] = f->index;
 	}
-	if (f->data->chopst[left] == f->index && f->data->chopst[right] == f->index)
-		eating(timestamp() - start, f, left, right);
+	if (f->data->chopst[f->left] == f->index && f->data->chopst[right] == f->index)
+		eating(timestamp() - start, f, right);
 	else
 		thinking(timestamp() - start, f);
-}
-
-void	thinking(long time, philo_t *f)
-{
-	printf("%ld %d is thinking", time, f->index);
-}
-
-
-void	eating(long time, philo_t *f, int left, int right)
-{
-	printf("%ld %d is eating", time, f->index);
-	while (timestamp() - time < f->data->time_eat)
-		usleep(100);
-	f->last_eat = timestamp();
-	release_forks(f, left, right);
-	sleeping();
 }
 
 void	*start_routine(void *arg)
@@ -79,10 +87,7 @@ void	*start_routine(void *arg)
 	int		right;
 
 	f = (philo_t *)arg;
-	if (f->index == 0)
-		left = f->data->nb_phil - 1;
-	else
-		left = f->index - 1;
+	
 	right = f->index;
 	pthread_mutex_init(&f->data->forks[left], NULL);
 	pthread_mutex_init(&f->data->forks[right], NULL);
@@ -97,6 +102,10 @@ void	init_philot(philo_t *f, dinner_t *d, int i)
 	f->last_eat = 0LL;
 	f->data = d;
 	f->index = i;
+	if (f->index == 0)
+		f->left = f->data->nb_phil - 1;
+	else
+		f->left = f->index - 1;
 }
 
 int	create_threads(int nb_phil, dinner_t *d)
