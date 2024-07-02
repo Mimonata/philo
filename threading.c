@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/29 14:19:59 by spitul           ###   ########.fr       */
+/*   Updated: 2024/07/02 19:47:01 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	sleeping(long time, philo_t *f)
 	printf("%ld %d is sleeping\n", time, f->index);
 	while (timestamp() - time < f->data->time_sleep)
 		usleep(1);
-	take_forks(f, f->last_eat, )
+	take_forks(f, f->last_eat, f->index);
 }
 
 void	release_forks(philo_t *f, int left, int right)
@@ -41,17 +41,19 @@ void	release_forks(philo_t *f, int left, int right)
 
 void	eating(long time, philo_t *f, int right)
 {
+	long	current;
+	
 	printf("%ld %d is eating\n", time, f->index);
 	while (timestamp() - time < f->data->time_eat)
 		usleep(1);
 	f->last_eat = timestamp();
 	release_forks(f, f->left, right);
-	sleeping();
+	current = timestamp();
+	sleeping(current, f);
 }
-void	take_forks(philo_t *f, long start, int left, int right)
+void	take_forks(philo_t *f, long start, int right)
 {
 	long	time;
-	int		right;
 	
 	right = f->index;
 	time = timestamp() - start;
@@ -93,7 +95,7 @@ void	*start_routine(void *arg)
 	pthread_mutex_init(&f->data->forks[right], NULL);
 	start = timestamp();
 	while (timestamp() - start < f->data->time_die)
-		take_forks(f, start, left, right);
+		take_forks(f, start, right);
 	return (arg);
 }
 

@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/29 14:15:27 by spitul           ###   ########.fr       */
+/*   Updated: 2024/07/02 19:43:16 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ typedef struct philo_s
 }				philo_t;
 
 int	create_threads(int nb_phil, dinner_t *d);
+
+void	take_forks(philo_t *f, long start, int right);
 
 int	ft_atoi(const char *nptr);
 double	ft_atod(char *s);
