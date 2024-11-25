@@ -23,20 +23,31 @@ long	timestamp(void)
 void	thinking(long time, philo_t *f)
 {
 	printf("%ld %d is thinking\n", time, f->index);
+	while (timestamp() - f->last_eat < f->dinner_data->time_die)
+	{
+		if (take_forks(f, timestamp(), f->index) == 1)
+			break;
+		usleep(1);
+	}
+	if (timestamp() - f->last_eat >= f->dinner_data->time_die)
+	{
+		printf("%ld %d has died", timestamp(), f->index);
+		//halt_all
+	}
 }
 
 void	sleeping(long time, philo_t *f)
 {
 	printf("%ld %d is sleeping\n", time, f->index);
-	while (timestamp() - time < f->data->time_sleep)
+	while (timestamp() - time < f->dinner_data->time_sleep)
 		usleep(1);
 	take_forks(f, f->last_eat, f->index);
 }
 
 void	release_forks(philo_t *f, int left, int right)
 {
-	pthread_mutex_unlock(&f->data->forks[left]);
-	pthread_mutex_unlock(&f->data->forks[right]);
+	pthread_mutex_unlock(&f->dinner_data->mutex_chops[left]);
+	pthread_mutex_unlock(&f->dinner_data->mutex_chops[right]);
 }
 
 void	eating(long time, philo_t *f, int right)
@@ -44,68 +55,72 @@ void	eating(long time, philo_t *f, int right)
 	long	current;
 	
 	printf("%ld %d is eating\n", time, f->index);
-	while (timestamp() - time < f->data->time_eat)
+	while (timestamp() - time < f->dinner_data->time_eat)
 		usleep(1);
 	f->last_eat = timestamp();
 	release_forks(f, f->left, right);
 	current = timestamp();
 	sleeping(current, f);
 }
-void	take_forks(philo_t *f, long start, int right)
+int	take_forks(philo_t *f, double start, int right)
 {
 	long	time;
 	
-	right = f->index;
+	//right = f->index;
 	time = timestamp() - start;
-	if (f->index % 2) 
+	if (f->index % 2) // das hier überdenken
 	{
-		pthread_mutex_lock(&f->data->forks[f->left]);
+		pthread_mutex_lock(&f->dinner_data->mutex_chops[f->left]);
 		printf("%ld %d has taken left fork\n", time, f->index);
-		f->data->chopst[f->left] = f->index;
-		pthread_mutex_lock(&f->data->forks[right]);
+		f->dinner_data->chops[f->left] = f->index;
+		pthread_mutex_lock(&f->dinner_data->mutex_chops[right]);
 		printf("%ld %d has taken right fork\n", time, f->index);
-		f->data->chopst[right] = f->index;
+		f->dinner_data->chops[right] = f->index;
+		return (1);
 	}
 	else
 	{
-		pthread_mutex_lock(&f->data->forks[right]);
+		pthread_mutex_lock(&f->dinner_data->mutex_chops[right]);
 		printf("%ld %d has taken right fork\n", time, f->index);
-		f->data->chopst[right] = f->index;
-		pthread_mutex_lock(&f->data->forks[f->left]);
+		f->dinner_data->chops[right] = f->index;
+		pthread_mutex_lock(&f->dinner_data->mutex_chops[f->left]);
 		printf("%ld %d has taken left fork\n", time, f->index);
-		f->data->chopst[f->left] = f->index;
+		f->dinner_data->chops[f->left] = f->index;
+		return (1);
 	}
-	if (f->data->chopst[f->left] == f->index && f->data->chopst[right] == f->index)
+	if (f->dinner_data->chops[f->left] == f->index && f->dinner_data->chops[right] == f->index)
 		eating(timestamp() - start, f, right);
 	else
 		thinking(timestamp() - start, f);
+	return (0);
 }
 
 void	*start_routine(void *arg)
 {
-	long	start;
+	double	start; //double?
 	philo_t	*f;
-	int		left;
 	int		right;
 
 	f = (philo_t *)arg;
-	
 	right = f->index;
-	pthread_mutex_init(&f->data->forks[left], NULL);
-	pthread_mutex_init(&f->data->forks[right], NULL);
 	start = timestamp();
-	while (timestamp() - start < f->data->time_die)
+	while (timestamp() - start < f->dinner_data->time_die) //why this while
 		take_forks(f, start, right);
-	return (arg);
+	return ((void *)f);
 }
 
 void	init_philot(philo_t *f, dinner_t *d, int i)
 {
-	f->last_eat = 0LL;
-	f->data = d;
+	f->last_eat = 0.0;
+	f->dinner_data = d;
 	f->index = i;
 	if (f->index == 0)
-		f->left = f->data->nb_phil - 1;
+	{
+		if (d->nb_phil == 1)
+			f->left = -1;
+		else
+			f->left = f->dinner_data->nb_phil - 1;
+	}
 	else
 		f->left = f->index - 1;
 }
@@ -118,6 +133,8 @@ int	create_threads(int nb_phil, dinner_t *d)
 
 	th = malloc(nb_phil * sizeof(pthread_t));
 	f = malloc(nb_phil * sizeof(philo_t));
+	pthread_mutex_init(&f->dinner_data->mutex_chops[f->left], NULL);
+	pthread_mutex_init(&f->dinner_data->mutex_chops[right], NULL);
 	i = 0;
 	while (i < nb_phil)
 	{
@@ -132,6 +149,9 @@ int	create_threads(int nb_phil, dinner_t *d)
 	}
 	i = 0;
 	while (i < nb_phil)
-		pthread_join(th[i], NULL);
+	{
+		pthread_join(th[i], arg); //is the arg needed for anything, maybe last_eat
+		i ++;
+	}
 	return (0);
 }

@@ -5,7 +5,7 @@
             "name": "Debug a.out",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/a.out",
+            "program": "${workspaceFolder}/philo.h.ghc",
             "args": [
 					"11", "3", "4", "2" 
 			],

@@ -27,16 +27,16 @@ typedef struct	dinner_s
 	double	time_eat;
 	double	time_sleep;
 	int		eating_times;		
-	pthread_mutex_t		*forks;
-	int		*chopst;
+	pthread_mutex_t		*mutex_chops;
+	int		*chops;
 }				dinner_t;
 
 typedef struct philo_s
 {
 	int		index;
 	int		left;
-	long	last_eat;
-	dinner_t	*data;
+	double	last_eat;
+	dinner_t	*dinner_data;
 }				philo_t;
 
 int	create_threads(int nb_phil, dinner_t *d);

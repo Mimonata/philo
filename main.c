@@ -24,9 +24,11 @@ void	init_dinner(dinner_t d)
 int	main(int argc, char **argv)
 {
 	dinner_t	d;
+	int			i;
 	
 	init_dinner(d);
-	//isdigit or input check or error return from atodi	
+	i = 0;
+	//isdigit or input check or error return from atod	
 	if (argc == 5 || argc == 6)
 	{
 		if (argv[1] != NULL)
@@ -43,9 +45,15 @@ int	main(int argc, char **argv)
 	}
 	else 
 		write (1, "wrong input", 11);
-	d.forks = malloc((d.nb_phil * sizeof(pthread_mutex_t)));
-	d.chopst = malloc((d.nb_phil * sizeof(int)));
-	memset(d.chopst, 0, d.nb_phil * sizeof(int));
+	//this does not belong here 😭😭 vielleicht doch
+	d.mutex_chops = malloc((d.nb_phil * sizeof(pthread_mutex_t)));
+	while (i < d.nb_phil)
+	{
+		pthread_mutex_init(dinner_data->mutex_chops[i], NULL);
+		i ++;
+	}
+	d.chops = malloc((d.nb_phil * sizeof(int)));
+	memset(d.chops, 0, d.nb_phil * sizeof(int)); //check forb func
 	create_threads(d.nb_phil, &d);
 	return (0);
 }
