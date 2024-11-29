@@ -3,22 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/29 13:57:10 by spitul           ###   ########.fr       */
+/*   Updated: 2024/11/29 06:19:36 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_dinner(dinner_t d)
+void	init_dinner(dinner_t *d)
 {
-	d.nb_phil = 0;
-	d.eating_times = 0.0;
-	d.time_die = 0.0;
-	d.time_eat = 0.0;
-	d.time_sleep = 0.0;
+	d->nb_phil = 0;
+	d->eating_times = 0;
+	d->time_die = 0;
+	d->time_eat = 0;
+	d->time_sleep = 0;
+	d->start_time = 0;
+	d->one_dead = 0;
 }
 
 int	main(int argc, char **argv)
@@ -26,7 +28,7 @@ int	main(int argc, char **argv)
 	dinner_t	d;
 	int			i;
 	
-	init_dinner(d);
+	init_dinner(&d);
 	i = 0;
 	//isdigit or input check or error return from atod	
 	if (argc == 5 || argc == 6)
@@ -44,12 +46,12 @@ int	main(int argc, char **argv)
 				d.eating_times = ft_atoi(argv[5]);
 	}
 	else 
-		write (1, "wrong input", 11);
-	//this does not belong here 😭😭 vielleicht doch
+		write (1, "wrong input\n", 12);
+	//this does not belong here vielleicht doch
 	d.mutex_chops = malloc((d.nb_phil * sizeof(pthread_mutex_t)));
 	while (i < d.nb_phil)
 	{
-		pthread_mutex_init(dinner_data->mutex_chops[i], NULL);
+		pthread_mutex_init(&d.mutex_chops[i], NULL);
 		i ++;
 	}
 	d.chops = malloc((d.nb_phil * sizeof(int)));
