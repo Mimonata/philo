@@ -6,7 +6,7 @@
 #    By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/14 21:17:34 by spitul            #+#    #+#              #
-#    Updated: 2024/11/29 06:36:23 by spitul           ###   ########.fr        #
+#    Updated: 2024/11/29 06:38:59 by spitul           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,11 +31,12 @@ $(OBJDIR)/%.o: %.c
 $(NAME): $(OBJ)
 		$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-clean: rm -f $(OBJ)
+clean: 
+		rm -f $(OBJ)
 
 fclean: clean
 		rm -rf $(OBJDIR)
-		$(RM) $(NAME)
+		rm $(NAME)
 
 re: fclean all
 
