@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threading.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/11/30 16:47:50 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/03 06:53:24 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,9 @@ void	eating(long time, philo_t *f, int right)
 	printf("%ld %d is eating\n", time - f->dinner_data->start_time, f->index);
 	while (timestamp() - time < f->dinner_data->time_eat)
 		usleep(100);
-	f->last_eat = timestamp();
+	f->dinner_data->states[f->index][LAST_EAT] = timestamp();
+	f->dinner_data->states[f->index][MEALS_EATEN] ++;
+	//f->last_eat = timestamp();
 	release_forks(f, f->left, right);
 	current = timestamp();
 	sleeping(current, f);
@@ -124,18 +126,14 @@ int	take_forks(philo_t *f, int right)
 			release_forks(f, f->left, right);
 	}
 	thinking(timestamp() - f->dinner_data->start_time, f);
-	/*if (f->dinner_data->chops[f->left] == f->index
-		&& f->dinner_data->chops[right] == f->index)
-	{
-		eating(timestamp(), f, right);
-		return (1);
-	}
-	else
-	{
-		release_forks(f, f->left, f->index);
-		thinking(timestamp() - f->dinner_data->start_time, f);
-	}*/
 	return (0);
+}
+
+void	*start_monitor(void *arg)
+{
+	philo_t	*m;
+
+	
 }
 
 void	*start_routine(void *arg)
@@ -154,6 +152,7 @@ void	*start_routine(void *arg)
 void	init_philot(philo_t *f, dinner_t *d, int i)
 {
 	f->last_eat = d->start_time;
+	f->meals_nb = 0;
 	f->dinner_data = d;
 	f->index = i;
 	if (f->index == 0)
@@ -174,8 +173,17 @@ int	create_threads(int nb_phil, dinner_t *d)
 	int			i;
 
 	th = malloc(nb_phil * sizeof(pthread_t));
-	f = malloc(nb_phil * sizeof(philo_t));
-	i = 0;
+	if (!th)
+		error(); //consider here what needs to be deallocated
+	f = malloc(nb_phil * sizeof(philo_t)); //dealloc!!
+	if (!f)
+		error();
+	i = 1;
+	if (pthread_create(&th[0], NULL, &start_monitor, &f[0]) != 0)
+	{
+		printf("**Error: can't create thread**");
+		return (1);			
+	}
 	d->start_time = timestamp();
 	while (i < nb_phil)
 	{
@@ -193,6 +201,8 @@ int	create_threads(int nb_phil, dinner_t *d)
 	{
 		pthread_join(th[i], NULL); // is the arg needed for anything,
 			//maybe last_eat
+		free_struct(f[i]); //todo
+		free(th[i]);
 		i++;
 	}
 	return (0);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/11/30 16:04:37 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/03 06:49:12 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	init_dinner(dinner_t *d)
 	d->time_sleep = 0;
 	d->start_time = 0;
 	d->one_dead = 0;
+	d->states = 0;
 }
 
 int	main(int argc, char **argv)
@@ -49,9 +50,12 @@ int	main(int argc, char **argv)
 		write (1, "wrong input\n", 12);
 	//this does not belong here vielleicht doch
 	d.mutex_chops = malloc((d.nb_phil * sizeof(pthread_mutex_t)));
+	d.states = malloc(d.nb_phil * sizeof(long[2]));
 	while (i < d.nb_phil)
 	{
 		pthread_mutex_init(&d.mutex_chops[i], NULL);
+		d.states[i][LAST_EAT] = 0;
+		d.states[i][MEALS_EATEN] = 0;
 		i ++;
 	}
 	d.chops = malloc((d.nb_phil * sizeof(int)));
