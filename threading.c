@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/03 06:53:24 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/05 07:47:39 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,8 +132,19 @@ int	take_forks(philo_t *f, int right)
 void	*start_monitor(void *arg)
 {
 	philo_t	*m;
-
+	int		i;
 	
+	m = (philo_t *)arg;
+	i = 1;
+	while (m->dinner_data->one_dead == 0)
+	{
+		while (i <= m->dinner_data->nb_phil) 
+		{
+			if (m->dinner_data->states[i][LAST_EAT] > m->dinner_data->time_die)
+				m->dinner_data->one_dead = 1;
+			if (m->dinner_data->states[i][MEALS_EATEN] > m->dinner_data->eating_times && m->dinner_data->eating_times != 0)
+		}
+	}
 }
 
 void	*start_routine(void *arg)
