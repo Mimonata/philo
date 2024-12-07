@@ -1,35 +1,29 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-	  {
-		"name": "Debug Philo Threads",
-		"type": "cppdbg",
-		"request": "launch",
-		"program": "${workspaceFolder}/philo", // Path to your executable
-		"args": ["5", "200", "200", "50"], // Pass the same arguments here
-		"stopAtEntry": false,
-		"cwd": "${workspaceFolder}",
-		"environment": {},
-		"externalConsole": false,
-		"MIMode": "gdb",
-		"setupCommands": [
-		  {
-			"description": "Enable pretty-printing for gdb",
-			"text": "set print pretty on",
-			"ignoreFailures": true
-		  }
-		],
-		"preLaunchTask": "build",
-		"miDebuggerPath": "/usr/bin/gdb",
-		"logging": {
-		  "engineLogging": true
-		},
-		"sourceFileMap": {
-		  "/path/to/your/source": "${workspaceFolder}"
-		},
-		"osx": {
-		  "gdb": "gdb"
-		}
-	  }
-	]
-  }  
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch Philosophers",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/philo",
+            "args": ["4", "410", "200", "200"], // Adjust philosopher arguments as needed
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

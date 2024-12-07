@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/06 20:48:55 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/07 18:46:47 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef struct dinner_s
 	int				eating_times;
 	long			start_time;
 	pthread_mutex_t	*mutex_chops;
+	pthread_mutex_t	mutex_states;
 	int *chops; // dont think this is needed but lets see
 	int				one_dead;
 	long (*states)[2]; //{last_eat, meals_eaten}

@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/06 19:44:04 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/07 18:47:27 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	init_dinner(dinner_t *d)
 	d->start_time = 0;
 	d->one_dead = 0;
 	d->states = 0;
+	pthread_mutex_init(&d->mutex_states, NULL);
 }
 
 int	main(int argc, char **argv)
