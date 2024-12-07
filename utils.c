@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:43:38 by spitul            #+#    #+#             */
-/*   Updated: 2024/06/24 19:21:59 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/06 20:46:44 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,18 @@ double	ft_atod(char *s)
 	c = 0;
 	fract_n = 0;
 	while (*s == 32 || (*s >= 9 && *s <= 13))
-		s ++;
+		s++;
 	while (*s == '+' || *s == '-')
-		if (*s ++ == '-')
+		if (*s++ == '-')
 			sign = -sign;
 	while (*s != '.' && (*s >= 48 && *s <= 57) && *s)
-		c = c * 10 + (*s ++ - 48);
+		c = c * 10 + (*s++ - 48);
 	if (*s == '.')
-		s ++;
+		s++;
 	while ((*s >= 48 && *s <= 57) && *s)
 	{
 		power /= 10;
-		fract_n = fract_n + (*s ++ - 48) * power;
+		fract_n = fract_n + (*s++ - 48) * power;
 	}
 	return ((c + fract_n) * sign);
 }
@@ -50,18 +50,59 @@ int	ft_atoi(const char *nptr)
 	s = 1;
 	r = 0;
 	while (((nptr[i] >= 9) && (nptr[i] <= 13)) || (nptr[i] == 32))
-		i ++;
+		i++;
 	if (nptr[i] == '-')
 	{
 		s = -1;
-		i ++;
+		i++;
 	}
 	else if (nptr[i] == '+')
-		i ++;
+		i++;
 	while (((nptr[i] >= '0') && (nptr[i] <= '9')) && (nptr[i]))
 	{
 		r = ((r * 10) + (nptr[i] - 48));
-		i ++;
+		i++;
 	}
 	return (r * s);
+}
+
+void	error(void)
+{
+	// cleanup
+}
+
+void	check_death(philo_t *m)
+{
+	int	i;
+
+	i = 1;
+	while (i <= m->dinner_data->nb_phil)
+	{
+		if (timestamp()
+			- m->dinner_data->states[i][LAST_EAT] > m->dinner_data->time_die)
+		{
+			m->dinner_data->one_dead = 1;
+			return ;
+		}
+		i++;
+	}
+}
+
+void	check_meals(philo_t *m)
+{
+	int	i;
+	int	fin;
+
+	i = 1;
+	fin = 0;
+	while (i <= m->dinner_data->nb_phil && fin != m->dinner_data->nb_phil)
+	{
+		if (m->dinner_data->states[i][MEALS_EATEN] >= m->dinner_data->eating_times)
+		{
+			fin++;
+		}
+		if (fin == m->dinner_data->nb_phil)
+			return ;
+		i++;
+	}
 }

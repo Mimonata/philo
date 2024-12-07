@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threading.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/05 07:47:39 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/06 21:12:19 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,13 @@ long	timestamp(void)
 {
 	struct timeval	tv;
 
-	gettimeofday(&tv, NULL);
+	gettimeofday(&tv, NULL); // check
 	return ((tv.tv_sec * 1000L) + (tv.tv_usec / 1000L));
 }
 
 void	thinking(long time, philo_t *f)
 {
+	// long	time_var;
 	printf("%ld %d is thinking\n", time, f->index);
 	while (timestamp() - f->last_eat < f->dinner_data->time_die)
 	{
@@ -30,18 +31,22 @@ void	thinking(long time, philo_t *f)
 		usleep(1);
 	}
 	if (timestamp() - f->last_eat >= f->dinner_data->time_die)
-	{
-		printf("%ld %d has died", timestamp() - f->dinner_data->start_time,
-			f->index);
-		// halt_all
-	}
+		f->dinner_data->one_dead = 1;
+	// {
+	// 	printf("%ld %d has died", timestamp() - f->dinner_data->start_time,
+	// 		f->index);
+	// 	// halt_all
+	// }
 }
 
 void	sleeping(long time, philo_t *f)
 {
 	printf("%ld %d is sleeping\n", time - f->dinner_data->start_time, f->index);
-	while (timestamp() - time < f->dinner_data->time_sleep)
+	while (timestamp() - time < f->dinner_data->time_sleep
+		&& f->dinner_data->one_dead == 0)
 		usleep(1);
+	if (f->dinner_data->one_dead == 1)
+		return ;
 	thinking(timestamp() - f->dinner_data->start_time, f);
 	take_forks(f, f->index);
 }
@@ -53,14 +58,14 @@ void	release_forks(philo_t *f, int left, int right)
 		pthread_mutex_unlock(&f->dinner_data->mutex_chops[left]);
 		printf("%ld %d has released left fork\n", timestamp()
 			- f->dinner_data->start_time, f->index);
-		f->dinner_data->chops[left] = -1;
+		f->dinner_data->chops[left] = 0;
 	}
 	if (f->dinner_data->chops[right] == f->index)
 	{
 		pthread_mutex_unlock(&f->dinner_data->mutex_chops[right]);
 		printf("%ld %d has released right fork\n", timestamp()
 			- f->dinner_data->start_time, f->index);
-		f->dinner_data->chops[right] = -1;
+		f->dinner_data->chops[right] = 0;
 	}
 }
 
@@ -68,12 +73,16 @@ void	eating(long time, philo_t *f, int right)
 {
 	long	current;
 
-	printf("%ld %d is eating\n", time - f->dinner_data->start_time, f->index);
-	while (timestamp() - time < f->dinner_data->time_eat)
-		usleep(100);
 	f->dinner_data->states[f->index][LAST_EAT] = timestamp();
-	f->dinner_data->states[f->index][MEALS_EATEN] ++;
-	//f->last_eat = timestamp();
+	f->dinner_data->states[f->index][MEALS_EATEN]++;
+	printf("\x1b[38;2;120;0;255m%ld %d is eating\x1b[0m\n", time
+		- f->dinner_data->start_time, f->index);
+	while (timestamp() - time < f->dinner_data->time_eat
+		&& f->dinner_data->one_dead == 0)
+		usleep(100);
+	if (f->dinner_data->one_dead == 1)
+		return ;
+	// f->last_eat = timestamp();
 	release_forks(f, f->left, right);
 	current = timestamp();
 	sleeping(current, f);
@@ -81,8 +90,10 @@ void	eating(long time, philo_t *f, int right)
 
 int	take_forks(philo_t *f, int right)
 {
-	printf("%ld %d is trying to pick up chops \n", timestamp()
-		- f->dinner_data->start_time, f->index);
+	printf("\x1b[38;2;189;252;201m%ld %d is trying to pick up chops \x1b[0m\n",
+		timestamp() - f->dinner_data->start_time, f->index);
+	if (f->dinner_data->one_dead == 1)
+		return (0);
 	if (f->index % 2) // das hier überdenken
 	{
 		if (pthread_mutex_lock(&f->dinner_data->mutex_chops[f->left]) == 0)
@@ -133,18 +144,16 @@ void	*start_monitor(void *arg)
 {
 	philo_t	*m;
 	int		i;
-	
+
 	m = (philo_t *)arg;
 	i = 1;
+	usleep(1000);
 	while (m->dinner_data->one_dead == 0)
 	{
-		while (i <= m->dinner_data->nb_phil) 
-		{
-			if (m->dinner_data->states[i][LAST_EAT] > m->dinner_data->time_die)
-				m->dinner_data->one_dead = 1;
-			if (m->dinner_data->states[i][MEALS_EATEN] > m->dinner_data->eating_times && m->dinner_data->eating_times != 0)
-		}
+		check_death(m);
+		check_meals(m);
 	}
+	return ((void *)m);
 }
 
 void	*start_routine(void *arg)
@@ -154,27 +163,28 @@ void	*start_routine(void *arg)
 
 	f = (philo_t *)arg;
 	right = f->index;
-	if (timestamp() - f->last_eat < f->dinner_data->time_die) // why this while
+	if (timestamp() - f->last_eat < f->dinner_data->time_die)
 		take_forks(f, right);
 	// else
-	return ((void *)f); // whawhawha
+	return ((void *)f);
 }
 
 void	init_philot(philo_t *f, dinner_t *d, int i)
 {
 	f->last_eat = d->start_time;
-	f->meals_nb = 0;
 	f->dinner_data = d;
+	f->dinner_data->states[f->index][MEALS_EATEN] = 0;
 	f->index = i;
-	if (f->index == 0)
+	if (f->index == 1)
 	{
 		if (d->nb_phil == 1)
-			f->left = -1;
+			f->left = -1; // oder 0
 		else
-			f->left = f->dinner_data->nb_phil - 1;
+			f->left = f->dinner_data->nb_phil;
 	}
 	else
 		f->left = f->index - 1;
+	f->dinner_data->states[f->index][LAST_EAT] = f->last_eat;
 }
 
 int	create_threads(int nb_phil, dinner_t *d)
@@ -184,19 +194,21 @@ int	create_threads(int nb_phil, dinner_t *d)
 	int			i;
 
 	th = malloc(nb_phil * sizeof(pthread_t));
-	if (!th)
-		error(); //consider here what needs to be deallocated
-	f = malloc(nb_phil * sizeof(philo_t)); //dealloc!!
-	if (!f)
-		error();
-	i = 1;
+	// if (!th)
+	// error();
+	// consider here what needs to be deallocated
+	f = malloc(nb_phil * sizeof(philo_t)); // dealloc!!
+	// if (!f)
+	// 	error();
+	init_philot(&f[0], d, 0);
 	if (pthread_create(&th[0], NULL, &start_monitor, &f[0]) != 0)
 	{
 		printf("**Error: can't create thread**");
-		return (1);			
+		return (1);
 	}
+	i = 1;
 	d->start_time = timestamp();
-	while (i < nb_phil)
+	while (i <= nb_phil)
 	{
 		init_philot(&f[i], d, i);
 		if (pthread_create(&th[i], NULL, &start_routine, &f[i]) != 0)
@@ -211,10 +223,10 @@ int	create_threads(int nb_phil, dinner_t *d)
 	while (i < nb_phil)
 	{
 		pthread_join(th[i], NULL); // is the arg needed for anything,
-			//maybe last_eat
-		free_struct(f[i]); //todo
-		free(th[i]);
+									// maybe last_eat
+		// free_struct(f[i]);         // todo
 		i++;
 	}
+	free(th);
 	return (0);
 }

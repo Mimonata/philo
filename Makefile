@@ -3,17 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+         #
+#    By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/14 21:17:34 by spitul            #+#    #+#              #
-#    Updated: 2024/11/29 06:38:59 by spitul           ###   ########.fr        #
+#    Updated: 2024/12/06 19:21:19 by spitul           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= philo
 
 CC		= cc 
-CFLAGS	= -Wall -Wextra -Werror
+CFLAGS	= -g -Wall -Wextra -Werror
 RM		= rm -f
 
 SRC		= main.c threading.c utils.c
@@ -37,6 +37,7 @@ clean:
 fclean: clean
 		rm -rf $(OBJDIR)
 		rm $(NAME)
+		rm *.gch 
 
 re: fclean all
 

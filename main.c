@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/03 06:49:12 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/06 19:44:04 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	main(int argc, char **argv)
 	int			i;
 	
 	init_dinner(&d);
-	i = 0;
+	i = 0; //maybe 1
 	//isdigit or input check or error return from atod	
 	if (argc == 5 || argc == 6)
 	{
@@ -49,9 +49,9 @@ int	main(int argc, char **argv)
 	else 
 		write (1, "wrong input\n", 12);
 	//this does not belong here vielleicht doch
-	d.mutex_chops = malloc((d.nb_phil * sizeof(pthread_mutex_t)));
-	d.states = malloc(d.nb_phil * sizeof(long[2]));
-	while (i < d.nb_phil)
+	d.mutex_chops = malloc(((d.nb_phil + 1)* sizeof(pthread_mutex_t)));
+	d.states = malloc((d.nb_phil + 1) * sizeof(long[2]));
+	while (i <= d.nb_phil)
 	{
 		pthread_mutex_init(&d.mutex_chops[i], NULL);
 		d.states[i][LAST_EAT] = 0;
