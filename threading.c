@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/07 19:15:29 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/08 18:22:16 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,82 +91,53 @@ void	eating(long time, philo_t *f, int right)
 	sleeping(current, f);
 }
 
+int	grab_forks(philo_t *f, int fork1, int fork2)
+{
+	dinner_t	*din;
+
+	din = f->dinner_data;
+	if (din->one_dead == 1)
+		return (0);
+	if (din->one_dead == 0)
+	{
+		pthread_mutex_lock(&din->mutex_chops[fork1]);
+		printf("%ld %d has taken left fork\n", timestamp() - din->start_time,
+			f->index);
+		din->chops[fork1] = f->index;
+		pthread_mutex_lock(&din->mutex_chops[fork2]);
+		printf("%ld %d has taken right fork\n", timestamp() - din->start_time,
+			f->index);
+		din->chops[fork2] = f->index;
+		eating(timestamp(), f, f->index);
+		return (1);
+	}
+	else
+		return (0);
+}
+
 int	take_forks(philo_t *f, int right)
 {
 	dinner_t	*din;
+	int			res;
 
 	// printf("\x1b[38;2;189;252;201m%ld%d is trying to pick up chops \x1b[0m\n",
 	// timestamp() - f->dinner_data->start_time, f->index);
 	din = f->dinner_data;
+	res = -1;
 	if (din->one_dead == 1)
 		return (0);
 	if (f->index % 2 == 0 && din->one_dead == 0) // das hier überdenken
 	{
-		pthread_mutex_lock(&din->mutex_chops[f->left]);
-		printf("%ld %d has taken left fork\n", timestamp()
-				- din->start_time, f->index);
-		din->chops[f->left] = f->index;
-		pthread_mutex_lock(&din->mutex_chops[right]);
-		printf("%ld %d has taken right fork\n", timestamp()
-					- din->start_time, f->index);
-		din->chops[right] = f->index;
-		eating(timestamp(), f, right);
-		return (1);
-		// if (pthread_mutex_lock(&din->mutex_chops[f->left]) == 0)
-		// { // am i still alive and drop the one
-		// 	printf("%ld %d has taken left fork\n", timestamp()
-		// 		- din->start_time, f->index);
-		// 	din->chops[f->left] = f->index;
-		// 	if (pthread_mutex_lock(&din->mutex_chops[right]) == 0)
-		// 	{ // am i still alive and drop forks
-		// 		printf("%ld %d has taken right fork\n", timestamp()
-		// 			- din->start_time, f->index);
-		// 		din->chops[right] = f->index;
-		// 		eating(timestamp(), f, right);
-		// 		return (1);
-		// 	}
-		// }
-		else
-			release_forks(f, f->left, right);
+	
+		res = grab_forks(f, f->left, right);
 	}
 	else
 	{
-		if (pthread_mutex_lock(&din->mutex_chops[right]) == 0
-			&& din->one_dead == 0)
-		{
-			printf("%ld %d has taken right fork\n", timestamp()
-				- din->start_time, f->index);
-			din->chops[right] = f->index;
-			if (pthread_mutex_lock(&din->mutex_chops[f->left]) == 0)
-			{
-				printf("%ld %d has taken left fork\n", timestamp()
-					- din->start_time, f->index);
-				din->chops[f->left] = f->index;
-				eating(timestamp(), f, right);
-				return (1);
-			}
-		}
-		else
-			release_forks(f, f->left, right);
+		res = grab_forks(f, right, f->left);
 	}
-	thinking(timestamp() - din->start_time, f);
+	if (res == 0)
+		thinking(timestamp() - din->start_time, f);
 	return (0);
-}
-
-void	*start_monitor(void *arg)
-{
-	philo_t	*m;
-	int		i;
-
-	m = (philo_t *)arg;
-	i = 1;
-	// usleep(1000);
-	while (m->dinner_data->one_dead == 0)
-	{
-		check_death(m);
-		check_meals(m);//rethink
-	}
-	return ((void *)m);
 }
 
 void	*start_routine(void *arg)
@@ -175,6 +146,8 @@ void	*start_routine(void *arg)
 	int		right;
 
 	f = (philo_t *)arg;
+	// if (f->index % 2 == 0)
+	// 	usleep(1500);
 	right = f->index;
 	if (timestamp() - f->last_eat < f->dinner_data->time_die)
 		take_forks(f, right);
@@ -186,18 +159,20 @@ void	init_philot(philo_t *f, dinner_t *d, int i)
 {
 	f->last_eat = d->start_time;
 	f->dinner_data = d;
-	//f->dinner_data->states[f->index][MEALS_EATEN] = 0;
+	// f->dinner_data->states[f->index][MEALS_EATEN] = 0;
 	f->index = i;
 	if (f->index == 1)
 	{
 		if (d->nb_phil == 1)
-			f->left = -1; 
+			f->left = -1;
 		else
 			f->left = f->dinner_data->nb_phil;
 	}
 	else
 		f->left = f->index - 1;
+	pthread_mutex_lock(&f->dinner_data->mutex_states);
 	f->dinner_data->states[f->index][LAST_EAT] = f->last_eat;
+	pthread_mutex_unlock(&f->dinner_data->mutex_states);
 }
 
 int	create_threads(int nb_phil, dinner_t *d)
@@ -226,15 +201,16 @@ int	create_threads(int nb_phil, dinner_t *d)
 		usleep(100);
 		i++;
 	}
-	init_philot(&f[0], d, 0);
-	if (pthread_create(&th[0], NULL, &start_monitor, &f[0]) != 0)
-	{
-		printf("**Error: can't create thread**");
-		return (1);
-	}
+	
+	// init_philot(&f[0], d, 0);
+	// if (pthread_create(&th[0], NULL, &start_monitor, &f[0]) != 0)
+	// {
+	// 	printf("**Error: can't create thread**");
+	// 	return (1);
+	// }
 	i = 1;
-	pthread_detach(th[0]);
-	while (i < nb_phil)
+	// pthread_detach(th[0]);
+	while (i <= nb_phil)
 	{
 		pthread_join(th[i], NULL); // is the arg needed for anything,
 									// maybe last_eat
