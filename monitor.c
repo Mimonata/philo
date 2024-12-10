@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/08 16:30:30 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/10 06:25:30 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,19 @@ int	check_meals(philo_t *m)
 	return (0);
 }
 
+void	create_monitor(dinner_t *m)
+{
+	m = malloc(sizeof(dinner_t));
+	if (!m)
+	//error
+	
+}
+
 void	*start_monitor(void *arg)
 {
 	philo_t	*m;
-	int		i;
 
 	m = (philo_t *)arg;
-	i = 1;
 	// usleep(1000);
 	while (m->dinner_data->one_dead == 0)
 	{

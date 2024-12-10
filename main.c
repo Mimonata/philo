@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/08 17:44:30 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/10 06:01:42 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int	main(int argc, char **argv)
 	d.mutex_chops = malloc(((d.nb_phil + 1)* sizeof(pthread_mutex_t)));
 	d.states = malloc((d.nb_phil + 1) * sizeof(long[2]));
 	if (!d.states)
-		; //TODO
+		//error();
 	while (i <= d.nb_phil)
 	{
 		pthread_mutex_init(&d.mutex_chops[i], NULL);
