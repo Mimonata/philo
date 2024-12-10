@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/10 06:25:30 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/10 06:30:59 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,17 @@ int	check_meals(philo_t *m)
 	return (0);
 }
 
-void	create_monitor(dinner_t *m)
+void	create_monitor(void)
 {
+	pthread_t	*mh;
+	dinner_t	*m;
+	
 	m = malloc(sizeof(dinner_t));
 	if (!m)
 	//error
-	
+	mh = malloc(sizeof(pthread_t));
+	if (!mh)
+	//error
 }
 
 void	*start_monitor(void *arg)
