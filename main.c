@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/10 06:01:42 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/12 07:33:04 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	init_dinner(dinner_t *d)
 {
 	d->nb_phil = 0;
-	d->eating_times = 0;
+	d->eating_times = -1;
 	d->time_die = 0;
 	d->time_eat = 0;
 	d->time_sleep = 0;
