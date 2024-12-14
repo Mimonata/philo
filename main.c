@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/12 07:33:04 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/14 17:56:51 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,40 +30,40 @@ int	main(int argc, char **argv)
 {
 	dinner_t	d;
 	int			i;
-	
+
 	init_dinner(&d);
-	i = 0; //maybe 1
-	//isdigit or input check or error return from atod	
+	i = 0;
+	// isdigit or input check or error return from atod
 	if (argc == 5 || argc == 6)
 	{
 		if (argv[1] != NULL)
-			d.nb_phil = ft_atoi(argv[1]);
+			d.nb_phil = ft_atol_phil(argv[1]);
 		if (argv[2] != NULL)
-			d.time_die = ft_atod(argv[2]);
+			d.time_die = ft_atol_phil(argv[2]);
 		if (argv[3] != NULL)
-			d.time_eat = ft_atod(argv[3]);
+			d.time_eat = ft_atol_phil(argv[3]);
 		if (argv[4] != NULL)
-			d.time_sleep = ft_atod(argv[4]);
+			d.time_sleep = ft_atol_phil(argv[4]);
 		if (argc == 6)
 			if (argv[5] != NULL)
-				d.eating_times = ft_atoi(argv[5]);
+				d.eating_times = ft_atol_phil(argv[5]);
 	}
-	else 
-		write (1, "wrong input\n", 12);
-	//this does not belong here vielleicht doch
-	d.mutex_chops = malloc(((d.nb_phil + 1)* sizeof(pthread_mutex_t)));
-	d.states = malloc((d.nb_phil + 1) * sizeof(long[2]));
+	else
+		write(1, "wrong input\n", 12);
+	// this does not belong here vielleicht doch
+	d.mutex_chops = malloc(((d.nb_phil) * sizeof(pthread_mutex_t)));
+	d.states = malloc((d.nb_phil) * sizeof(long[2]));
 	if (!d.states)
-		//error();
-	while (i <= d.nb_phil)
-	{
-		pthread_mutex_init(&d.mutex_chops[i], NULL);
-		d.states[i][LAST_EAT] = 0;
-		d.states[i][MEALS_EATEN] = 0;
-		i ++;
-	}
+		// error();
+		while (i < d.nb_phil)
+		{
+			pthread_mutex_init(&d.mutex_chops[i], NULL);
+			d.states[i][LAST_EAT] = 0;
+			d.states[i][MEALS_EATEN] = 0;
+			i++;
+		}
 	d.chops = malloc((d.nb_phil * sizeof(int)));
-	memset(d.chops, 0, d.nb_phil * sizeof(int)); //check forb func
+	memset(d.chops, -1, d.nb_phil * sizeof(int));
 	create_threads(d.nb_phil, &d);
 	return (0);
 }

@@ -6,13 +6,14 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/08 17:18:37 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/14 17:52:40 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <limits.h>
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -37,8 +38,8 @@ typedef struct dinner_s
 	long			start_time;
 	int				*chops;
 	int				one_dead;
-						//{last_eat, meals_eaten}
-	long			(*states)[2];
+	//{last_eat, meals_eaten}
+	long (*states)[2];
 	pthread_mutex_t	*mutex_chops;
 	pthread_mutex_t	mutex_states;
 	pthread_mutex_t	mutex_print;
@@ -57,8 +58,7 @@ int					create_threads(int nb_phil, dinner_t *d);
 
 int					take_forks(philo_t *f, int right);
 
-int					ft_atoi(const char *nptr);
-double				ft_atod(char *s);
+long				ft_atol_phil(const char *nptr);
 
 long				timestamp(void);
 

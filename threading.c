@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/08 18:22:16 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/14 18:24:06 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,6 @@ void	thinking(long time, philo_t *f)
 	// long	time_var;
 	printf("%ld %d is thinking\n", time, f->index);
 	take_forks(f, f->index);
-	// while (timestamp() - f->last_eat < f->dinner_data->time_die)
-	// {
-	// 	if (take_forks(f, f->index) == 1)
-	// 		break ;
-	// 	usleep(1);
-	// }
-	// if (timestamp() - f->last_eat >= f->dinner_data->time_die)
-	// 	f->dinner_data->one_dead = 1;
-	// {
-	// 	printf("%ld %d has died", timestamp() - f->dinner_data->start_time,
-	// 		f->index);
-	// 	// halt_all
-	// }
 }
 
 void	sleeping(long time, philo_t *f)
@@ -146,6 +133,11 @@ void	*start_routine(void *arg)
 	int		right;
 
 	f = (philo_t *)arg;
+	while (f->dinner_data->one_dead == 0)
+	{
+		take_forks(f, f->index);
+		sleeping(timestamp)
+	}
 	// if (f->index % 2 == 0)
 	// 	usleep(1500);
 	right = f->index;
@@ -166,7 +158,7 @@ void	init_philot(philo_t *f, dinner_t *d, int i)
 		if (d->nb_phil == 1)
 			f->left = -1;
 		else
-			f->left = f->dinner_data->nb_phil;
+			f->left = f->dinner_data->nb_phil - 1;
 	}
 	else
 		f->left = f->index - 1;
@@ -188,9 +180,9 @@ int	create_threads(int nb_phil, dinner_t *d)
 	f = malloc(nb_phil * sizeof(philo_t)); // dealloc!!
 	// if (!f)
 	// 	error();
-	i = 1;
+	i = 0;
 	d->start_time = timestamp();
-	while (i <= nb_phil)
+	while (i < nb_phil)
 	{
 		init_philot(&f[i], d, i);
 		if (pthread_create(&th[i], NULL, &start_routine, &f[i]) != 0)
@@ -201,19 +193,11 @@ int	create_threads(int nb_phil, dinner_t *d)
 		usleep(100);
 		i++;
 	}
-	
-	// init_philot(&f[0], d, 0);
-	// if (pthread_create(&th[0], NULL, &start_monitor, &f[0]) != 0)
-	// {
-	// 	printf("**Error: can't create thread**");
-	// 	return (1);
-	// }
-	i = 1;
+	i = 0;
 	// pthread_detach(th[0]);
-	while (i <= nb_phil)
+	while (i < nb_phil)
 	{
-		pthread_join(th[i], NULL); // is the arg needed for anything,
-									// maybe last_eat
+		pthread_join(th[i], NULL);
 		// free_struct(f[i]);         // todo
 		i++;
 	}
