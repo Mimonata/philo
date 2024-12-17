@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/12 07:33:22 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/16 20:02:54 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,27 @@ int	check_meals(dinner_t *m)
 	return (0);
 }
 
+void	*start_monitor(void *arg)
+{
+	dinner_t	*m;
+
+	m = (dinner_t *)arg;
+	// usleep(1000);
+	while (m->one_dead == 0)
+	{
+		if (m->one_dead == 0)
+			check_death(m);
+		else
+			break;
+		if (m->eating_times != -1 && m->one_dead == 0)
+			check_meals(m);
+		else
+			
+		usleep(1000);
+	}
+	return ((void *)m);
+}
+
 void	create_monitor(dinner_t *d)
 {
 	pthread_t	*mh;
@@ -69,19 +90,5 @@ void	create_monitor(dinner_t *d)
 		printf("**Cannot create monitor**\n");
 		return ;
 	}
-}
-
-void	*start_monitor(void *arg)
-{
-	dinner_t	*m;
-
-	m = (dinner_t *)arg;
-	// usleep(1000);
-	while (m->one_dead == 0)
-	{
-		check_death(m);
-		if (m->eating_times != -1)
-			check_meals(m); // rethink
-	}
-	return ((void *)m);
+	pthread_join(m, NULL);
 }

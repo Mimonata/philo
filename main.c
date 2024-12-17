@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/14 17:56:51 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/17 07:38:14 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,26 @@ void	init_dinner(dinner_t *d)
 	pthread_mutex_init(&d->mutex_print, NULL);
 }
 
+void	parse_input(int argc, char **argv, dinner_t d)
+{
+	d.nb_phil = ft_atol_phil(argv[1]);
+	if (d.nb_phil > 200)
+	{
+		printf("Number of philosophers cannot be greater than 200\n");
+		return ;
+	}
+	d.time_die = ft_atol_phil(argv[2]);
+	d.time_eat = ft_atol_phil(argv[3]);
+	d.time_sleep = ft_atol_phil(argv[4]);
+	if (d.time_die < 60 || d.time_eat < 60 || d.time_sleep < 60)
+	{
+		printf("Times must be greater than 60 milliseconds\n");
+		return ;
+	}
+	if (argc == 6)
+		d.eating_times = ft_atol_phil(argv[5]);
+}
+
 int	main(int argc, char **argv)
 {
 	dinner_t	d;
@@ -36,17 +56,7 @@ int	main(int argc, char **argv)
 	// isdigit or input check or error return from atod
 	if (argc == 5 || argc == 6)
 	{
-		if (argv[1] != NULL)
-			d.nb_phil = ft_atol_phil(argv[1]);
-		if (argv[2] != NULL)
-			d.time_die = ft_atol_phil(argv[2]);
-		if (argv[3] != NULL)
-			d.time_eat = ft_atol_phil(argv[3]);
-		if (argv[4] != NULL)
-			d.time_sleep = ft_atol_phil(argv[4]);
-		if (argc == 6)
-			if (argv[5] != NULL)
-				d.eating_times = ft_atol_phil(argv[5]);
+		parse_input(argc, argv, d);
 	}
 	else
 		write(1, "wrong input\n", 12);
@@ -55,13 +65,13 @@ int	main(int argc, char **argv)
 	d.states = malloc((d.nb_phil) * sizeof(long[2]));
 	if (!d.states)
 		// error();
-		while (i < d.nb_phil)
-		{
-			pthread_mutex_init(&d.mutex_chops[i], NULL);
-			d.states[i][LAST_EAT] = 0;
-			d.states[i][MEALS_EATEN] = 0;
-			i++;
-		}
+	while (i < d.nb_phil)
+	{
+		pthread_mutex_init(&d.mutex_chops[i], NULL);
+		d.states[i][LAST_EAT] = 0;
+		d.states[i][MEALS_EATEN] = 0;
+		i++;
+	}
 	d.chops = malloc((d.nb_phil * sizeof(int)));
 	memset(d.chops, -1, d.nb_phil * sizeof(int));
 	create_threads(d.nb_phil, &d);
