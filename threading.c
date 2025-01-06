@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threading.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/06 07:45:48 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/06 19:02:37 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,20 +23,16 @@ long	timestamp(void)
 void	thinking(long time, philo_t *f)
 {
 	// long	time_var;
-	printf("%ld %d is thinking\n", time, f->index);
+	printing(f, THINKING, timestamp());
 	take_forks(f, f->index);
 }
 
 void	sleeping(long time, philo_t *f)
 {
-	printf("%ld %d is sleeping\n", time - f->dinner_data->start_time, f->index);
-	while (timestamp() - time < f->dinner_data->time_sleep
-		&& f->dinner_data->one_dead == 0)
-		usleep(1);
+	printing(f, SLEEPING, timestamp());
+	usleep(f->dinner_data->time_sleep);
 	if (f->dinner_data->one_dead == 1)
 		return ;
-	thinking(timestamp() - f->dinner_data->start_time, f);
-	take_forks(f, f->index);
 }
 
 void	release_forks(philo_t *f, int left, int right)
@@ -136,9 +132,9 @@ void	*start_routine(void *arg)
 	while (f->dinner_data->one_dead == 0)
 	{
 		take_forks(f, f->index);
-		eating();
-		sleeping(timestamp, f);
-		thinking();
+		eating(timestamp(), f, f->index);
+		sleeping(timestamp(), f);
+		thinking(timestamp(), f);
 	}
 	// if (f->index % 2 == 0)
 	// 	usleep(1500);

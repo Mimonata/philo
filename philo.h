@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/14 17:52:40 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/06 19:04:27 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,10 @@
 # define MEALS_EATEN 1
 
 # define EATING 2
-# define SlEEPING 3
+# define SLEEPING 3
 # define THINKING 4
+# define TAKES_LEFFORK 5
+# define TAKES_RIGHTFORK 6
 
 typedef struct dinner_s
 {
@@ -59,6 +61,7 @@ int					create_threads(int nb_phil, dinner_t *d);
 int					take_forks(philo_t *f, int right);
 
 long				ft_atol_phil(const char *nptr);
+void				printing(philo_t *f, int state, long time);
 
 long				timestamp(void);
 
