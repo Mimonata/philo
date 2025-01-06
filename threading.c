@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threading.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/14 18:24:06 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/06 07:14:38 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void	*start_routine(void *arg)
 	while (f->dinner_data->one_dead == 0)
 	{
 		take_forks(f, f->index);
-		sleeping(timestamp)
+		sleeping(timestamp, f);
 	}
 	// if (f->index % 2 == 0)
 	// 	usleep(1500);

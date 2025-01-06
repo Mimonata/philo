@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:43:38 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/14 18:19:01 by spitul           ###   ########.fr       */
+/*   Updated: 2024/12/17 18:31:33 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ long	ft_atol_phil(const char *nptr)
 	return (r);
 }
 
-	void error(void)
+	void print_error(char *s)
 	{
 		// cleanup
 	}
