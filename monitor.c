@@ -6,18 +6,24 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2024/12/16 20:02:54 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/08 07:43:20 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	wait_all_threads(dinner_t *d)
+{
+	while (!d->all_ready)
+		;
+}
 
 void	check_death(dinner_t *m)
 {
 	int			i;
 
 	i = 1;
-	pthread_mutex_lock(&m->mutex_states);
+	pthread_mutex_lock(&m->mtx_states);
 	while (i <= m->nb_phil)
 	{
 		if (timestamp() - m->states[i][LAST_EAT] > m->time_die)
@@ -29,7 +35,7 @@ void	check_death(dinner_t *m)
 		}
 		i++;
 	}
-	pthread_mutex_unlock(&m->mutex_states);
+	pthread_mutex_unlock(&m->mtx_states);
 }
 
 int	check_meals(dinner_t *m)
@@ -39,14 +45,14 @@ int	check_meals(dinner_t *m)
 
 	i = 1;
 	fin = 0;
-	pthread_mutex_lock(&m->mutex_states);
+	pthread_mutex_lock(&m->mtx_states);
 	while (i <= m->nb_phil && fin < m->nb_phil)
 	{
 		if (m->states[i][MEALS_EATEN] >= m->eating_times)
 			fin++;
 		i++;
 	}
-	pthread_mutex_unlock(&m->mutex_states);
+	pthread_mutex_unlock(&m->mtx_states);
 	if (fin == m->nb_phil)
 	{
 		// mutex
@@ -84,11 +90,8 @@ void	create_monitor(dinner_t *d)
 	
 	mh = malloc(sizeof(pthread_t));
 	if (!mh)
-	//error
+		return(print_error("Memory allocation failed"));
 	if (pthread_create(mh, NULL, &start_monitor, &d)!= 0)
-	{
-		printf("**Cannot create monitor**\n");
-		return ;
-	}
+		return(print_error("**Cannot create monitor**"));
 	pthread_join(m, NULL);
 }

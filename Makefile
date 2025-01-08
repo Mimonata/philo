@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+         #
+#    By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/14 21:17:34 by spitul            #+#    #+#              #
-#    Updated: 2024/12/14 16:20:32 by spitul           ###   ########.fr        #
+#    Updated: 2025/01/08 13:11:50 by spitul           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CC		= cc
 CFLAGS	= -g -Wall -Wextra -Werror
 RM		= rm -f
 
-SRC		= main.c threading.c utils.c 
+SRC		= data_init.c main.c threading.c utils.c utils_parsing.c
 
 OBJDIR	= ./obj
 

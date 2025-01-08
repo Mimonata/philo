@@ -3,68 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/16 16:43:38 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/06 19:20:36 by spitul           ###   ########.fr       */
+/*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
+/*   Updated: 2025/01/08 20:27:49 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	is_space(char *s)
+int	print_error(char *msg)
 {
-	return (*s == ' ' || (*s >= 9 && *s <= 13));
-}
-
-int	is_digit(const char s)
-{
-	return (s >= '0' && s <= '9');
-}
-
-int	input_error(int err)
-{
-	if (err == 1)
-		printf("Arguments can only be positive numbers\n");
-	else if (err == 2)
-		printf("Arguments can only be numbers\n");
-	else if (err == 3)
-		printf("Arguments must not be bigger than INT_MAX\n");
+	if (msg)
+		printf("%s\n", msg);
 	return (0);
-}
-
-long	ft_atol_phil(const char *nptr)
-{
-	int		i;
-	long	r;
-
-	i = 0;
-	r = 0;
-	while (((nptr[i] >= 9) && (nptr[i] <= 13)) || (nptr[i] == 32)
-		|| nptr[i] == '+' || nptr[i] == '-')
-	{
-		if (nptr[i] == '-')
-			return (input_error(1));
-		i++;
-	}
-	while (nptr[i])
-	{
-		if (is_digit(nptr[i]) == 0)
-		{
-			return (input_error(2));
-		}
-		else
-			r = ((r * 10) + (nptr[i] - 48));
-		i++;
-	}
-	if (r > INT_MAX)
-		return (input_error(3));
-	return (r);
-}
-
-void	print_error(char *s)
-{
-	// cleanup
 }
 
 void	printing(philo_t *f, int state, long time)
@@ -72,47 +24,81 @@ void	printing(philo_t *f, int state, long time)
 	dinner_t	*din;
 
 	din = f->dinner_data;
-	pthread_mutex_lock(&din->mutex_print);
+	pthread_mutex_lock(&din->mtx_print);
 	if (state == EATING && din->one_dead == 0)
-		printf("\x1b[38;2;120;0;255m%ld %d is eating\x1b[0m\n", time
+		printf("\x1b[38;200;120;0;255m%ld %d is eating\x1b[0m\n", time
 			- din->start_time, f->index);
 	else if (state == SLEEPING && din->one_dead == 0)
-		printf("\x1b[38;2;120;0;255m%ld %d is sleeping\x1b[0m\n", time
+		printf("\x1b[38;112;120;0;255m%ld %d is sleeping\x1b[0m\n", time
 			- din->start_time, f->index);
 	else if (state == THINKING && din->one_dead == 0)
 		printf("\x1b[38;2;120;0;255m%ld %d is thinking\x1b[0m\n", time
 			- din->start_time, f->index);
 	else if ((state == TAKES_LEFFORK || state == TAKES_RIGHTFORK)
 		&& din->one_dead == 0)
-		printf("\x1b[38;2;120;0;255m%ld %d has taken a fork\x1b[0m\n", time
+		printf("\x1b[38;182;120;0;255m%ld %d has taken a fork\x1b[0m\n", time
 			- din->start_time, f->index);
-	pthread_mutex_unlock(&din->mutex_print);
+	pthread_mutex_unlock(&din->mtx_print);
 }
 
-double	ft_atod(char *s)
+int	cleanup_din(dinner_t *d, char *msg)
 {
-	long double	c;
-	double		fract_n;
-	double		power;
-	int			sign;
-
-	sign = 1;
-	power = 1;
-	c = 0;
-	fract_n = 0;
-	while (*s == 32 || (*s >= 9 && *s <= 13))
-		s++;
-	while (*s == '+' || *s == '-')
-		if (*s++ == '-')
-			sign = -sign;
-	while (*s != '.' && (*s >= 48 && *s <= 57) && *s)
-		c = c * 10 + (*s++ - 48);
-	if (*s == '.')
-		s++;
-	while ((*s >= 48 && *s <= 57) && *s)
+	int	i;
+	
+	i = 0;
+	if (d->mtx_chops)
 	{
-		power /= 10;
-		fract_n = fract_n + (*s++ - 48) * power;
+		while (i < d->nb_phil)
+		{
+			pthread_mutex_destroy(&d->mtx_chops[i]);
+			i ++;
+		}
+		free (d->mtx_chops);
 	}
-	return ((c + fract_n) * sign);
+	pthread_mutex_destroy(&d->mtx_print);
+	pthread_mutex_destroy(&d->mtx_states);
+	if (d->states)
+		free (d->states);
+	if (d->chops)
+		free (d->chops);
+	if (msg) //einfach nur ein printf, wenn nur am Anfang verwendet - TO LOOK AT
+		printf("%s\n", msg);
+	return (0);
+}
+
+void	cleanup_th(dinner_t *d, philo_t *f, pthread_t *th, int i)
+{
+	if (i > 0)
+	{
+		i --;
+		while (th && i >= 0)
+		{
+			pthread_join(th[i], NULL);
+			i --;
+		}
+	}
+	if (th)
+		free (th);
+	if (f)
+		free (f);
+	cleanup_din(d, NULL);
+	//return (0);
+}
+
+int	create_phil_threads(dinner_t *d, philo_t *f, pthread_t *th)
+{
+	int	i;
+
+	i = 0;
+	while (i < d->nb_phil)
+	{
+		init_philo_th(&f[i], d, i);
+		if (pthread_create(&th[i], NULL, &start_routine, &f[i]) != 0)
+		{
+			cleanup_th(d, f, th, i);
+			return (print_error("Failure creating thread"));
+		}
+		i++;
+	}
+	return (1);
 }

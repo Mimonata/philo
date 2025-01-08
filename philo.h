@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/06 19:04:27 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/08 20:01:26 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <string.h>
 # include <sys/time.h>
 # include <unistd.h>
+# include <stdbool.h>
 
 # define LAST_EAT 0
 # define MEALS_EATEN 1
@@ -40,30 +41,38 @@ typedef struct dinner_s
 	long			start_time;
 	int				*chops;
 	int				one_dead;
+	bool			all_ready;
 	//{last_eat, meals_eaten}
 	long (*states)[2];
-	pthread_mutex_t	*mutex_chops;
-	pthread_mutex_t	mutex_states;
-	pthread_mutex_t	mutex_print;
+	pthread_mutex_t	*mtx_chops;
+	pthread_mutex_t	mtx_states;
+	pthread_mutex_t	mtx_print;
 }					dinner_t;
 
 typedef struct philo_s
 {
 	int				index;
 	int				left;
-	// int		meals_nb;
 	long			last_eat;
 	dinner_t		*dinner_data;
 }					philo_t;
 
-int					create_threads(int nb_phil, dinner_t *d);
+void	init_dinner(dinner_t *d);
+int	parse_input(int argc, char **argv, dinner_t d);
+int	allocate_resources(dinner_t *d);
+int					prepare_din_sim(int nb_phil, dinner_t *d);
 
 int					take_forks(philo_t *f, int right);
 
 long				ft_atol_phil(const char *nptr);
 void				printing(philo_t *f, int state, long time);
+int				print_error(char *msg);
+int	cleanup_din(dinner_t *d, char *msg);
+void	cleanup_th(dinner_t *d, philo_t *f, pthread_t *th, int i);
 
 long				timestamp(void);
+
+void	wait_all_threads(dinner_t *d);
 
 void				check_death(philo_t *m);
 int					check_meals(philo_t *m);
