@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/08 20:01:26 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/09 18:40:09 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 # define EATING 2
 # define SLEEPING 3
 # define THINKING 4
-# define TAKES_LEFFORK 5
+# define TAKES_LEFTFORK 5
 # define TAKES_RIGHTFORK 6
 
 typedef struct dinner_s
@@ -57,22 +57,27 @@ typedef struct philo_s
 	dinner_t		*dinner_data;
 }					philo_t;
 
+
 void	init_dinner(dinner_t *d);
 int	parse_input(int argc, char **argv, dinner_t d);
 int	allocate_resources(dinner_t *d);
 int					prepare_din_sim(int nb_phil, dinner_t *d);
 
-int					take_forks(philo_t *f, int right);
+int					dinner_synchro(philo_t *f, int right);
 
 long				ft_atol_phil(const char *nptr);
 void				printing(philo_t *f, int state, long time);
+void	set_long(dinner_t *d, long var, long value);
 int				print_error(char *msg);
 int	cleanup_din(dinner_t *d, char *msg);
 void	cleanup_th(dinner_t *d, philo_t *f, pthread_t *th, int i);
 
 long				timestamp(void);
 
+int	start_phil_threads(dinner_t *d, philo_t *f, pthread_t *th);
+void	init_philo_th(philo_t *f, dinner_t *d, int i);
 void	wait_all_threads(dinner_t *d);
+void	*start_routine(void *arg);
 
 void				check_death(philo_t *m);
 int					check_meals(philo_t *m);

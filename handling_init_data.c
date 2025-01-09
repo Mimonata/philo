@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   data_init.c                                        :+:      :+:    :+:   */
+/*   handling_init_data.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/08 19:16:22 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/09 16:38:15 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,3 +75,9 @@ int	allocate_resources(dinner_t *d)
 	return (1);
 }
 
+void	set_long(dinner_t *d, long var, long value)
+{
+	pthread_mutex_lock(&d->mtx_states);
+	var = value;
+	pthread_mutex_unlock(&d->mtx_states);
+}

@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/08 20:15:14 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/09 18:41:48 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	thinking(long time, philo_t *f)
 {
 	// long	time_var;
 	printing(f, THINKING, timestamp());
-	take_forks(f, f->index);
+	eating(f, f->index);
 }
 
 void	sleeping(long time, philo_t *f)
@@ -82,21 +82,19 @@ int	grab_forks(philo_t *f, int fork1, int fork2)
 	if (din->one_dead == 0)
 	{
 		pthread_mutex_lock(&din->mtx_chops[fork1]);
-		printf("%ld %d has taken left fork\n", timestamp() - din->start_time,
-			f->index);
-		din->chops[fork1] = f->index;
+		printing(f, TAKES_LEFTFORK, timestamp());
 		pthread_mutex_lock(&din->mtx_chops[fork2]);
-		printf("%ld %d has taken right fork\n", timestamp() - din->start_time,
-			f->index);
-		din->chops[fork2] = f->index;
+		printing(f, TAKES_RIGHTFORK, timestamp());
 		eating(timestamp(), f, f->index);
+		pthread_mutex_unlock(&din->mtx_chops[fork1]);
+		pthread_mutex_unlock(&din->mtx_chops[fork2]);
 		return (1);
 	}
 	else
 		return (0);
 }
 
-int	take_forks(philo_t *f, int right)
+int	dinner_synchro(philo_t *f, int right)
 {
 	dinner_t	*din;
 	int			res;
@@ -112,7 +110,7 @@ int	take_forks(philo_t *f, int right)
 	
 		res = grab_forks(f, f->left, right);
 	}
-	else
+	else if (f->index % 2 == 1 && din->one_dead == 0)
 	{
 		res = grab_forks(f, right, f->left);
 	}
@@ -131,36 +129,29 @@ void	*start_routine(void *arg)
 	wait_all_threads(f->dinner_data);
 	while (f->dinner_data->one_dead == 0)
 	{
-		take_forks(f, f->index);
+		dinner_synchro(f, f->index); //nicht gut - wie gestalten, dass es hiermit passt?
 		eating(timestamp(), f, f->index);
 		sleeping(timestamp(), f);
 		thinking(timestamp(), f);
 	}
-	// if (f->index % 2 == 0)
-	// 	usleep(1500);
-	// if (timestamp() - f->last_eat < f->dinner_data->time_die)
-	// 	take_forks(f, right);
 	return ((void *)f);
 }
 
 void	init_philo_th(philo_t *f, dinner_t *d, int i)
 {
-	//f->last_eat = d->start_time; where to move this 
+	set_long(d, d->states[i][MEALS_EATEN], 0);
+	set_long(d, d->states[i][LAST_EAT], d->start_time);
 	f->dinner_data = d;
-	// f->dinner_data->states[f->index][MEALS_EATEN] = 0;
 	f->index = i;
 	if (f->index == 0)
 	{
 		if (d->nb_phil == 1)
 			f->left = -1;
 		else
-			f->left = f->dinner_data->nb_phil - 1;
+			f->left = d->nb_phil - 1;
 	}
 	else
 		f->left = f->index - 1;
-	pthread_mutex_lock(&f->dinner_data->mtx_states);
-	f->dinner_data->states[f->index][LAST_EAT] = f->last_eat; // really??
-	pthread_mutex_unlock(&f->dinner_data->mtx_states);
 }
 
 int	prepare_din_sim(int nb_phil, dinner_t *d)
@@ -171,17 +162,14 @@ int	prepare_din_sim(int nb_phil, dinner_t *d)
 
 	th = malloc(nb_phil * sizeof(pthread_t));
 	if (!th)
-		return (cleanup_din(d->mtx_chops, d->nb_phil, d->states, d->chops, "Threads allocation failed"));
+		return (cleanup_din(d, "Threads allocation failed"));
 	f = malloc(nb_phil * sizeof(philo_t));
 	if (!f)
 	{
 		free (th);
-		return (cleanup_din(d, "Phil_t allocation failed"));
+		return (cleanup_din(d, "Philo_t allocation failed"));
 	}
-	create_phil_threads(d, f);
-	
-	d->start_time = timestamp();
-	d->all_ready = true;
-	cleanup_th(d, f, th, d-nb_phil - 1);
+	start_phil_threads(d, f, th);
+	cleanup_th(d, f, th, d->nb_phil - 1);
 	return (0);
 }

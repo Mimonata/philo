@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/08 20:27:49 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/09 18:36:33 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	printing(philo_t *f, int state, long time)
 	else if (state == THINKING && din->one_dead == 0)
 		printf("\x1b[38;2;120;0;255m%ld %d is thinking\x1b[0m\n", time
 			- din->start_time, f->index);
-	else if ((state == TAKES_LEFFORK || state == TAKES_RIGHTFORK)
+	else if ((state == TAKES_LEFTFORK || state == TAKES_RIGHTFORK)
 		&& din->one_dead == 0)
 		printf("\x1b[38;182;120;0;255m%ld %d has taken a fork\x1b[0m\n", time
 			- din->start_time, f->index);
@@ -85,11 +85,12 @@ void	cleanup_th(dinner_t *d, philo_t *f, pthread_t *th, int i)
 	//return (0);
 }
 
-int	create_phil_threads(dinner_t *d, philo_t *f, pthread_t *th)
+int	start_phil_threads(dinner_t *d, philo_t *f, pthread_t *th)
 {
 	int	i;
 
 	i = 0;
+	d->start_time = timestamp();
 	while (i < d->nb_phil)
 	{
 		init_philo_th(&f[i], d, i);
@@ -100,5 +101,6 @@ int	create_phil_threads(dinner_t *d, philo_t *f, pthread_t *th)
 		}
 		i++;
 	}
+	d->all_ready = true;
 	return (1);
 }

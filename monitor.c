@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/08 07:43:20 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/09 10:26:14 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	check_death(dinner_t *m)
 		if (timestamp() - m->states[i][LAST_EAT] > m->time_die)
 		{
 			m->one_dead = 1;
+			printing(NULL, )
 			printf("\033[1;31m%ld %d has died\033[0m\n", timestamp()
 				- m->start_time, i);
 			break ;
