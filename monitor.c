@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/09 10:26:14 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/10 21:37:22 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	*start_monitor(void *arg)
 			check_meals(m);
 		else
 			
-		usleep(1000);
+		usleep(5000);
 	}
 	return ((void *)m);
 }
@@ -87,12 +87,14 @@ void	*start_monitor(void *arg)
 void	create_monitor(dinner_t *d)
 {
 	pthread_t	*mh;
-	dinner_t	*m;
-	
+		
 	mh = malloc(sizeof(pthread_t));
 	if (!mh)
 		return(print_error("Memory allocation failed"));
 	if (pthread_create(mh, NULL, &start_monitor, &d)!= 0)
+	{
+		cleanup_th(d, NULL, mh, 0); //clean of philo threads also needed
 		return(print_error("**Cannot create monitor**"));
-	pthread_join(m, NULL);
+	}
+	//pthread_join(m, NULL);
 }

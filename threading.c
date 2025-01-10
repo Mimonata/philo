@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/09 18:41:48 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/10 21:15:36 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,56 +22,28 @@ long	timestamp(void)
 
 void	thinking(long time, philo_t *f)
 {
-	// long	time_var;
 	printing(f, THINKING, timestamp());
-	eating(f, f->index);
 }
 
 void	sleeping(long time, philo_t *f)
 {
 	printing(f, SLEEPING, timestamp());
-	usleep(f->dinner_data->time_sleep);
+	usleep(f->dinner_data->time_sleep * 1000);
 	if (f->dinner_data->one_dead == 1)
 		return ;
-}
-
-void	release_forks(philo_t *f, int left, int right)
-{
-	if (f->dinner_data->chops[left] == f->index)
-	{
-		pthread_mutex_unlock(&f->dinner_data->mtx_chops[left]);
-		printf("%ld %d has released left fork\n", timestamp()
-			- f->dinner_data->start_time, f->index);
-		f->dinner_data->chops[left] = 0;
-	}
-	if (f->dinner_data->chops[right] == f->index)
-	{
-		pthread_mutex_unlock(&f->dinner_data->mtx_chops[right]);
-		printf("%ld %d has released right fork\n", timestamp()
-			- f->dinner_data->start_time, f->index);
-		f->dinner_data->chops[right] = 0;
-	}
 }
 
 void	eating(long time, philo_t *f, int right)
 {
-	long	current;
-
-	pthread_mutex_lock(&f->dinner_data->mtx_states);
-	f->dinner_data->states[f->index][LAST_EAT] = timestamp();
-	f->dinner_data->states[f->index][MEALS_EATEN]++;
-	pthread_mutex_unlock(&f->dinner_data->mtx_states);
-	printf("\x1b[38;2;120;0;255m%ld %d is eating\x1b[0m\n", time
-		- f->dinner_data->start_time, f->index);
+	printing(f, EATING, timestamp());
+	set_long(f->dinner_data, f->dinner_data->states[right][LAST_EAT], timestamp());
+	set_long(f->dinner_data, f->dinner_data->states[right][MEALS_EATEN], f->dinner_data->states[right][MEALS_EATEN] + 1);
+	//usleep(f->dinner_data->time_eat * 1000);
 	while (timestamp() - time < f->dinner_data->time_eat
 		&& f->dinner_data->one_dead == 0)
 		usleep(100);
-	if (f->dinner_data->one_dead == 1)
+	if (f->dinner_data->one_dead == 1) //dunno ob das nötig, wahrscheinlich nicht
 		return ;
-	// f->last_eat = timestamp();
-	release_forks(f, f->left, right);
-	current = timestamp();
-	sleeping(current, f);
 }
 
 int	grab_forks(philo_t *f, int fork1, int fork2)
@@ -106,17 +78,9 @@ int	dinner_synchro(philo_t *f, int right)
 	if (din->one_dead == 1)
 		return (0);
 	if (f->index % 2 == 0 && din->one_dead == 0) // das hier überdenken
-	{
-	
 		res = grab_forks(f, f->left, right);
-	}
 	else if (f->index % 2 == 1 && din->one_dead == 0)
-	{
 		res = grab_forks(f, right, f->left);
-	}
-	if (res == 0)
-		thinking(timestamp() - din->start_time, f);
-	return (0);
 }
 
 void	*start_routine(void *arg)
@@ -129,8 +93,7 @@ void	*start_routine(void *arg)
 	wait_all_threads(f->dinner_data);
 	while (f->dinner_data->one_dead == 0)
 	{
-		dinner_synchro(f, f->index); //nicht gut - wie gestalten, dass es hiermit passt?
-		eating(timestamp(), f, f->index);
+		dinner_synchro(f, f->index); 
 		sleeping(timestamp(), f);
 		thinking(timestamp(), f);
 	}
@@ -170,6 +133,7 @@ int	prepare_din_sim(int nb_phil, dinner_t *d)
 		return (cleanup_din(d, "Philo_t allocation failed"));
 	}
 	start_phil_threads(d, f, th);
+	//insert monitor here
 	cleanup_th(d, f, th, d->nb_phil - 1);
 	return (0);
 }

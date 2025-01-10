@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/09 18:40:09 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/10 21:17:35 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # define THINKING 4
 # define TAKES_LEFTFORK 5
 # define TAKES_RIGHTFORK 6
+# define DIED 7
 
 typedef struct dinner_s
 {

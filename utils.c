@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/09 18:36:33 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/10 21:17:11 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,9 @@ void	printing(philo_t *f, int state, long time)
 	else if ((state == TAKES_LEFTFORK || state == TAKES_RIGHTFORK)
 		&& din->one_dead == 0)
 		printf("\x1b[38;182;120;0;255m%ld %d has taken a fork\x1b[0m\n", time
+			- din->start_time, f->index);
+	else if (state == DIED)
+		printf("\x1b[38;182;120;0;255m%ld %d has died\x1b[0m\n", time
 			- din->start_time, f->index);
 	pthread_mutex_unlock(&din->mtx_print);
 }
