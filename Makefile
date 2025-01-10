@@ -6,7 +6,7 @@
 #    By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/14 21:17:34 by spitul            #+#    #+#              #
-#    Updated: 2025/01/09 16:34:18 by spitul           ###   ########.fr        #
+#    Updated: 2025/01/10 21:50:03 by spitul           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CC		= cc
 CFLAGS	= -g -Wall -Wextra -Werror
 RM		= rm -f
 
-SRC		= handling_init_data.c main.c threading.c utils.c utils_parsing.c
+SRC		= handling_init_data.c main.c monitor.c threading.c utils.c utils_parsing.c
 
 OBJDIR	= ./obj
 

@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/10 21:15:36 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/10 21:48:10 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@ long	timestamp(void)
 
 void	thinking(long time, philo_t *f)
 {
-	printing(f, THINKING, timestamp());
+	printing(f, THINKING, time);
 }
 
 void	sleeping(long time, philo_t *f)
 {
-	printing(f, SLEEPING, timestamp());
+	printing(f, SLEEPING, time);
 	usleep(f->dinner_data->time_sleep * 1000);
 	if (f->dinner_data->one_dead == 1)
 		return ;
@@ -36,8 +36,8 @@ void	sleeping(long time, philo_t *f)
 void	eating(long time, philo_t *f, int right)
 {
 	printing(f, EATING, timestamp());
-	set_long(f->dinner_data, f->dinner_data->states[right][LAST_EAT], timestamp());
-	set_long(f->dinner_data, f->dinner_data->states[right][MEALS_EATEN], f->dinner_data->states[right][MEALS_EATEN] + 1);
+	set_long(f->dinner_data, &f->dinner_data->states[right][LAST_EAT], timestamp());
+	set_long(f->dinner_data, &f->dinner_data->states[right][MEALS_EATEN], f->dinner_data->states[right][MEALS_EATEN] + 1);
 	//usleep(f->dinner_data->time_eat * 1000);
 	while (timestamp() - time < f->dinner_data->time_eat
 		&& f->dinner_data->one_dead == 0)
@@ -81,6 +81,7 @@ int	dinner_synchro(philo_t *f, int right)
 		res = grab_forks(f, f->left, right);
 	else if (f->index % 2 == 1 && din->one_dead == 0)
 		res = grab_forks(f, right, f->left);
+	return (res); //dunno if needed
 }
 
 void	*start_routine(void *arg)
@@ -102,8 +103,8 @@ void	*start_routine(void *arg)
 
 void	init_philo_th(philo_t *f, dinner_t *d, int i)
 {
-	set_long(d, d->states[i][MEALS_EATEN], 0);
-	set_long(d, d->states[i][LAST_EAT], d->start_time);
+	set_long(d, &d->states[i][MEALS_EATEN], 0);
+	set_long(d, &d->states[i][LAST_EAT], d->start_time);
 	f->dinner_data = d;
 	f->index = i;
 	if (f->index == 0)
@@ -121,7 +122,6 @@ int	prepare_din_sim(int nb_phil, dinner_t *d)
 {
 	pthread_t	*th;
 	philo_t		*f;
-	int			i;
 
 	th = malloc(nb_phil * sizeof(pthread_t));
 	if (!th)
