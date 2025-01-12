@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/10 21:41:30 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/12 21:46:06 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,13 @@ void	init_dinner(dinner_t *d)
 	d->start_time = 0;
 	d->one_dead = 0;
 	d->all_ready = false;
-	pthread_mutex_init(&d->mtx_states, NULL);
-	pthread_mutex_init(&d->mtx_print, NULL);
+	d->end_din = false;
 	d->chops = NULL;
-	d->mtx_chops = NULL;
+	d->mtx_forks = NULL;
+	d->mtx_states = NULL;
 	d->states = NULL;
+	pthread_mutex_init(&d->mtx_print, NULL);
+	pthread_mutex_init(&d->mtx_end, NULL);
 }
 
 int	parse_input(int argc, char **argv, dinner_t d)
@@ -55,15 +57,19 @@ int	allocate_resources(dinner_t *d)
 	int	i;
 
 	i = 0;
-	d->mtx_chops = malloc(((d->nb_phil) * sizeof(pthread_mutex_t)));
-	if (!d->mtx_chops)
+	d->mtx_forks = malloc((d->nb_phil) * sizeof(pthread_mutex_t));
+	if (!d->mtx_forks)
 		return(print_error("Memory allocation failed"));
 	d->states = malloc((d->nb_phil) * sizeof(long[2]));
 	if (!d->states)
 		return (cleanup_din(d, "Memory allocation failed"));
+	d->mtx_states = malloc((d->nb_phil) * sizeof(pthread_mutex_t)); 
+	if (!d->mtx_states)
+		return (cleanup_din(d, "Memory allocation failed"));
 	while (i < d->nb_phil)
 	{
-		pthread_mutex_init(&d->mtx_chops[i], NULL);
+		pthread_mutex_init(&d->mtx_forks[i], NULL);
+		pthread_mutex_init(&d->mtx_states[i], NULL);
 		d->states[i][LAST_EAT] = 0;
 		d->states[i][MEALS_EATEN] = 0;
 		i++;
@@ -75,9 +81,26 @@ int	allocate_resources(dinner_t *d)
 	return (1);
 }
 
-void	set_long(dinner_t *d, long *var, long value)
+void	set_long(philo_t *f, long *var, long value)
 {
-	pthread_mutex_lock(&d->mtx_states);
+	pthread_mutex_lock(&f->dinner_data->mtx_states[f->index]);
 	*var = value;
-	pthread_mutex_unlock(&d->mtx_states);
+	pthread_mutex_unlock(&f->dinner_data->mtx_states[f->index]);
+}
+
+void	set_bool(pthread_mutex_t mtx, bool *var, bool val)
+{
+	pthread_mutex_lock(&mtx);
+	*var = val;
+	pthread_mutex_unlock(&mtx);
+}
+
+bool	*get_bool(pthread_mutex_t mtx, bool var)
+{
+	bool res;
+	
+	pthread_mutex_lock(&mtx);
+	res = var;
+	pthread_mutex_unlock(&mtx);
+	return (res);
 }

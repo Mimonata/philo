@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/10 21:52:09 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/12 21:44:16 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,14 @@ typedef struct dinner_s
 	long			start_time;
 	int				*chops;
 	int				one_dead;
+	bool			end_din;
 	bool			all_ready;
 	//{last_eat, meals_eaten}
 	long (*states)[2];
-	pthread_mutex_t	*mtx_chops;
-	pthread_mutex_t	mtx_states;
+	pthread_mutex_t	*mtx_forks;
+	pthread_mutex_t	*mtx_states;
 	pthread_mutex_t	mtx_print;
+	pthread_mutex_t	mtx_end;
 }					dinner_t;
 
 typedef struct philo_s
@@ -68,7 +70,9 @@ int					dinner_synchro(philo_t *f, int right);
 
 long				ft_atol_phil(const char *nptr);
 void				printing(philo_t *f, int state, long time);
-void	set_long(dinner_t *d, long *var, long value);
+void	set_long(philo_t *f, long *var, long value);
+bool	*get_bool(pthread_mutex_t *mtx, bool var);
+void	set_bool(pthread_mutex_t *mtx, bool *var, bool val);
 int				print_error(char *msg);
 int	cleanup_din(dinner_t *d, char *msg);
 void	cleanup_th(dinner_t *d, philo_t *f, pthread_t *th, int i);

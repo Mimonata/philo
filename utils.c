@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/10 21:17:11 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/12 21:28:14 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,22 +44,27 @@ void	printing(philo_t *f, int state, long time)
 	pthread_mutex_unlock(&din->mtx_print);
 }
 
-int	cleanup_din(dinner_t *d, char *msg)
+void	clean_mtx_array(pthread_mutex_t *mtx, int nb_phil)
 {
 	int	i;
 	
 	i = 0;
-	if (d->mtx_chops)
+	while (i < nb_phil)
 	{
-		while (i < d->nb_phil)
-		{
-			pthread_mutex_destroy(&d->mtx_chops[i]);
-			i ++;
-		}
-		free (d->mtx_chops);
+		pthread_mutex_destroy(&mtx[i]);
+		i ++;
 	}
+	free (mtx);
+}
+
+int	cleanup_din(dinner_t *d, char *msg)
+{
+	if (d->mtx_forks)
+		clean_mtx_array(d->mtx_forks, d->nb_phil);
+	if (d->mtx_states)
+		clean_mtx_array(d->mtx_states, d->nb_phil);
 	pthread_mutex_destroy(&d->mtx_print);
-	pthread_mutex_destroy(&d->mtx_states);
+	pthread_mutex_destroy(&d->mtx_end);
 	if (d->states)
 		free (d->states);
 	if (d->chops)

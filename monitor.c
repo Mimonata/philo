@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/10 21:37:22 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/12 22:22:26 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,82 +18,84 @@ void	wait_all_threads(dinner_t *d)
 		;
 }
 
-void	check_death(dinner_t *m)
+void	check_death(dinner_t *d)
 {
 	int			i;
 
-	i = 1;
-	pthread_mutex_lock(&m->mtx_states);
-	while (i <= m->nb_phil)
+	i = 0;
+	while (i < d->nb_phil)
 	{
-		if (timestamp() - m->states[i][LAST_EAT] > m->time_die)
+		pthread_mutex_lock(&d->mtx_states[i]);
+		if (timestamp() - d->states[i][LAST_EAT] > d->time_die)
 		{
-			m->one_dead = 1;
-			printing(NULL, )
+			set_bool(&d->mtx_end, d->end_din, true);
+			pthread_mutex_lock(&d->mtx_print);
 			printf("\033[1;31m%ld %d has died\033[0m\n", timestamp()
-				- m->start_time, i);
+				- d->start_time, i);
+			pthread_mutex_unlock(&d->mtx_print);
 			break ;
 		}
+		pthread_mutex_unlock(&d->mtx_states[i]);
 		i++;
 	}
-	pthread_mutex_unlock(&m->mtx_states);
 }
 
-int	check_meals(dinner_t *m)
+int	check_meals(dinner_t *d)
 {
 	int			i;
 	int			fin;
 
 	i = 1;
 	fin = 0;
-	pthread_mutex_lock(&m->mtx_states);
-	while (i <= m->nb_phil && fin < m->nb_phil)
+	while (i <= d->nb_phil && fin < d->nb_phil)
 	{
-		if (m->states[i][MEALS_EATEN] >= m->eating_times)
+			pthread_mutex_lock(&d->mtx_states);
+
+		if (d->states[i][MEALS_EATEN] >= d->eating_times)
+		pthread_mutex_unlock(&d->mtx_states);
 			fin++;
 		i++;
 	}
-	pthread_mutex_unlock(&m->mtx_states);
-	if (fin == m->nb_phil)
+	
+	if (fin == d->nb_phil)
 	{
 		// mutex
+		set_bool()
 		m->one_dead = 1;
 		return (1);
 	}
 	return (0);
 }
 
-void	*start_monitor(void *arg)
+void	*create_monitor(void *arg)
 {
-	dinner_t	*m;
+	dinner_t	*d;
+	
 
-	m = (dinner_t *)arg;
-	// usleep(1000);
-	while (m->one_dead == 0)
+	d = (dinner_t *)arg;
+	while (!get_bool(&d->mtx_end, d->end_din))
 	{
-		if (m->one_dead == 0)
-			check_death(m);
-		else
-			break;
-		if (m->eating_times != -1 && m->one_dead == 0)
-			check_meals(m);
-		else
-			
+		check_death(d);
+		if (d->eating_times != -1)
+			check_meals(d);
 		usleep(5000);
 	}
-	return ((void *)m);
+	return ((void *)d);
 }
 
-void	create_monitor(dinner_t *d)
+void	start_monitor(dinner_t *d, philo_t *f)
 {
 	pthread_t	*mh;
 		
 	mh = malloc(sizeof(pthread_t));
 	if (!mh)
-		return(print_error("Memory allocation failed"));
-	if (pthread_create(mh, NULL, &start_monitor, &d)!= 0)
 	{
-		cleanup_th(d, NULL, mh, 0); //clean of philo threads also needed
+		set_bool(&d->mtx_end, d->end_din, true);
+		return(print_error("Memory allocation failed"));
+	}
+	if (pthread_create(mh, NULL, &create_monitor, &d)!= 0)
+	{
+		set_bool(&d->mtx_end, d->end_din, true);
 		return(print_error("**Cannot create monitor**"));
 	}
 	//pthread_join(m, NULL);
