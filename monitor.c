@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/12 22:22:26 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/12 22:25:43 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,23 +45,19 @@ int	check_meals(dinner_t *d)
 	int			i;
 	int			fin;
 
-	i = 1;
+	i = 0;
 	fin = 0;
-	while (i <= d->nb_phil && fin < d->nb_phil)
+	while (i < d->nb_phil && fin < d->nb_phil)
 	{
-			pthread_mutex_lock(&d->mtx_states);
-
+		pthread_mutex_lock(&d->mtx_states[i]);
 		if (d->states[i][MEALS_EATEN] >= d->eating_times)
-		pthread_mutex_unlock(&d->mtx_states);
 			fin++;
+		pthread_mutex_unlock(&d->mtx_states[i]);
 		i++;
 	}
-	
 	if (fin == d->nb_phil)
 	{
-		// mutex
-		set_bool()
-		m->one_dead = 1;
+		set_bool(d->mtx_end, d->end_din, true);
 		return (1);
 	}
 	return (0);
