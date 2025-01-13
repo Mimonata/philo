@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/12 21:46:06 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 07:56:54 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void	set_bool(pthread_mutex_t mtx, bool *var, bool val)
 	pthread_mutex_unlock(&mtx);
 }
 
-bool	*get_bool(pthread_mutex_t mtx, bool var)
+bool	get_bool(pthread_mutex_t mtx, bool var)
 {
 	bool res;
 	

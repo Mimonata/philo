@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/12 21:44:16 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 08:02:08 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,8 @@ int					dinner_synchro(philo_t *f, int right);
 long				ft_atol_phil(const char *nptr);
 void				printing(philo_t *f, int state, long time);
 void	set_long(philo_t *f, long *var, long value);
-bool	*get_bool(pthread_mutex_t *mtx, bool var);
-void	set_bool(pthread_mutex_t *mtx, bool *var, bool val);
+bool	get_bool(pthread_mutex_t mtx, bool var);
+void	set_bool(pthread_mutex_t mtx, bool *var, bool val);
 int				print_error(char *msg);
 int	cleanup_din(dinner_t *d, char *msg);
 void	cleanup_th(dinner_t *d, philo_t *f, pthread_t *th, int i);
@@ -86,6 +86,7 @@ void	*start_routine(void *arg);
 
 void				check_death(dinner_t *m);
 int					check_meals(dinner_t *m);
-void				*start_monitor(void *arg);
+int	start_monitor(dinner_t *d);
+void				*create_monitor(void *arg);
 
 #endif

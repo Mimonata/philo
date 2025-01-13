@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/12 21:25:05 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 08:12:59 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ long	timestamp(void)
 
 void	thinking(long time, philo_t *f)
 {
-	if (!f->dinner_data->end_din)
+	if (!get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
 		printing(f, THINKING, time);
 }
 
@@ -30,7 +30,7 @@ void	sleeping(long time, philo_t *f)
 {
 	printing(f, SLEEPING, time);
 	usleep(f->dinner_data->time_sleep * 1000);
-	if (f->dinner_data->end_din == 1)
+	if (get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
 		return ;
 }
 
@@ -41,9 +41,9 @@ void	eating(long time, philo_t *f, int right)
 	set_long(f, &f->dinner_data->states[right][MEALS_EATEN], f->dinner_data->states[right][MEALS_EATEN] + 1);
 	//usleep(f->dinner_data->time_eat * 1000);
 	while (timestamp() - time < f->dinner_data->time_eat
-		&& f->dinner_data->end_din == 0)
+		&& !get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
 		usleep(100);
-	if (f->dinner_data->end_din == 1) //dunno ob das nötig, wahrscheinlich nicht
+	if (get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din)) //dunno ob das nötig, wahrscheinlich nicht
 		return ;
 }
 
@@ -52,7 +52,7 @@ int	grab_forks(philo_t *f, int fork1, int fork2)
 	dinner_t	*din;
 
 	din = f->dinner_data;
-	if (din->one_dead == 0)
+	if (!get_bool(din->mtx_end, din->end_din))
 	{
 		pthread_mutex_lock(&din->mtx_forks[fork1]);
 		printing(f, TAKES_LEFTFORK, timestamp());
@@ -76,11 +76,11 @@ int	dinner_synchro(philo_t *f, int right)
 	// timestamp() - f->dinner_data->start_time, f->index);
 	din = f->dinner_data;
 	res = -1;
-	if (din->one_dead == 1)
+	if (get_bool(din->mtx_end, din->end_din))
 		return (0);
-	if (f->index % 2 == 0 && din->one_dead == 0) // das hier überdenken
+	if (f->index % 2 == 0 && get_bool(din->mtx_end, din->end_din)) // das hier überdenken
 		res = grab_forks(f, f->left, right);
-	else if (f->index % 2 == 1 && din->one_dead == 0)
+	else if (f->index % 2 == 1 && get_bool(din->mtx_end, din->end_din))
 		res = grab_forks(f, right, f->left);
 	return (res); //dunno if needed
 }
@@ -93,7 +93,7 @@ void	*start_routine(void *arg)
 	// right = f->index;
 	f = (philo_t *)arg;
 	wait_all_threads(f->dinner_data);
-	while (f->dinner_data->end_din == 0)
+	while (!get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
 	{
 		dinner_synchro(f, f->index); 
 		sleeping(timestamp(), f);
@@ -134,7 +134,7 @@ int	prepare_din_sim(int nb_phil, dinner_t *d)
 		return (cleanup_din(d, "Philo_t allocation failed"));
 	}
 	start_phil_threads(d, f, th);
-	//start_monitor(d, f);
+	start_monitor(d);
 	cleanup_th(d, f, th, d->nb_phil - 1);
 	//cleanup mon
 	return (0);
