@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/13 08:14:09 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 20:10:49 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ void	*create_monitor(void *arg)
 {
 	dinner_t	*d;
 	
-
 	d = (dinner_t *)arg;
 	while (!get_bool(d->mtx_end, d->end_din))
 	{

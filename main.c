@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/08 20:01:26 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 19:03:24 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	main(int argc, char **argv)
 	init_dinner(&d);
 	if (argc == 5 || argc == 6)
 	{
-		sim = parse_input(argc, argv, d);
+		sim = parse_input(argc, argv, &d);
 	}
 	else
 		return (!print_error("Wrong input"));

@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/13 08:02:08 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 20:13:56 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,14 @@ typedef struct philo_s
 
 
 void	init_dinner(dinner_t *d);
-int	parse_input(int argc, char **argv, dinner_t d);
+int	parse_input(int argc, char **argv, dinner_t *d);
 int	allocate_resources(dinner_t *d);
 int					prepare_din_sim(int nb_phil, dinner_t *d);
 
 int					dinner_synchro(philo_t *f, int right);
 
 long				ft_atol_phil(const char *nptr);
-void				printing(philo_t *f, int state, long time);
+void				printing(philo_t *f, int state);
 void	set_long(philo_t *f, long *var, long value);
 bool	get_bool(pthread_mutex_t mtx, bool var);
 void	set_bool(pthread_mutex_t mtx, bool *var, bool val);

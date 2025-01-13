@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/12 21:28:14 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 20:13:24 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,27 +19,27 @@ int	print_error(char *msg)
 	return (0);
 }
 
-void	printing(philo_t *f, int state, long time)
+void	printing(philo_t *f, int state)
 {
 	dinner_t	*din;
 
 	din = f->dinner_data;
 	pthread_mutex_lock(&din->mtx_print);
-	if (state == EATING && din->one_dead == 0)
-		printf("\x1b[38;200;120;0;255m%ld %d is eating\x1b[0m\n", time
+	if (state == EATING && !get_bool(din->mtx_end, din->end_din))
+		printf("\x1b[38;200;120;0;255m%ld %d is eating\x1b[0m\n", timestamp()
 			- din->start_time, f->index);
-	else if (state == SLEEPING && din->one_dead == 0)
-		printf("\x1b[38;112;120;0;255m%ld %d is sleeping\x1b[0m\n", time
+	else if (state == SLEEPING && !get_bool(din->mtx_end, din->end_din))
+		printf("\x1b[38;112;120;0;255m%ld %d is sleeping\x1b[0m\n", timestamp()
 			- din->start_time, f->index);
-	else if (state == THINKING && din->one_dead == 0)
-		printf("\x1b[38;2;120;0;255m%ld %d is thinking\x1b[0m\n", time
+	else if (state == THINKING && !get_bool(din->mtx_end, din->end_din))
+		printf("\x1b[38;2;120;0;255m%ld %d is thinking\x1b[0m\n", timestamp()
 			- din->start_time, f->index);
 	else if ((state == TAKES_LEFTFORK || state == TAKES_RIGHTFORK)
-		&& din->one_dead == 0)
-		printf("\x1b[38;182;120;0;255m%ld %d has taken a fork\x1b[0m\n", time
+		&& (!get_bool(din->mtx_end, din->end_din)))
+		printf("\x1b[55;182;120;0;255m%ld %d has taken a fork\x1b[0m\n", timestamp()
 			- din->start_time, f->index);
 	else if (state == DIED)
-		printf("\x1b[38;182;120;0;255m%ld %d has died\x1b[0m\n", time
+		printf("\x1b[38;182;120;0;255m%ld %d has died\x1b[0m\n", timestamp()
 			- din->start_time, f->index);
 	pthread_mutex_unlock(&din->mtx_print);
 }

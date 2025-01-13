@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/13 08:12:59 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 20:23:00 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,29 @@ long	timestamp(void)
 	return ((tv.tv_sec * 1000L) + (tv.tv_usec / 1000L));
 }
 
-void	thinking(long time, philo_t *f)
+void	thinking(philo_t *f)
 {
 	if (!get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
-		printing(f, THINKING, time);
+		printing(f, THINKING);
 }
 
-void	sleeping(long time, philo_t *f)
+void	sleeping(philo_t *f)
 {
-	printing(f, SLEEPING, time);
+	printing(f, SLEEPING);
 	usleep(f->dinner_data->time_sleep * 1000);
 	if (get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
 		return ;
 }
 
-void	eating(long time, philo_t *f, int right)
+void	eating(philo_t *f, int right)
 {
-	printing(f, EATING, timestamp());
+	printing(f, EATING);
 	set_long(f, &f->dinner_data->states[right][LAST_EAT], timestamp());
 	set_long(f, &f->dinner_data->states[right][MEALS_EATEN], f->dinner_data->states[right][MEALS_EATEN] + 1);
-	//usleep(f->dinner_data->time_eat * 1000);
-	while (timestamp() - time < f->dinner_data->time_eat
-		&& !get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
-		usleep(100);
+	usleep(f->dinner_data->time_eat * 1000);
+	// while (timestamp() - time < f->dinner_data->time_eat
+	// 	&& !get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
+	// 	usleep(1000);
 	if (get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din)) //dunno ob das nötig, wahrscheinlich nicht
 		return ;
 }
@@ -55,10 +55,10 @@ int	grab_forks(philo_t *f, int fork1, int fork2)
 	if (!get_bool(din->mtx_end, din->end_din))
 	{
 		pthread_mutex_lock(&din->mtx_forks[fork1]);
-		printing(f, TAKES_LEFTFORK, timestamp());
+		printing(f, TAKES_LEFTFORK);
 		pthread_mutex_lock(&din->mtx_forks[fork2]);
-		printing(f, TAKES_RIGHTFORK, timestamp());
-		eating(timestamp(), f, f->index);
+		printing(f, TAKES_RIGHTFORK);
+		eating(f, f->index);
 		pthread_mutex_unlock(&din->mtx_forks[fork1]);
 		pthread_mutex_unlock(&din->mtx_forks[fork2]);
 		return (1);
@@ -72,15 +72,13 @@ int	dinner_synchro(philo_t *f, int right)
 	dinner_t	*din;
 	int			res;
 
-	// printf("\x1b[38;2;189;252;201m%ld%d is trying to pick up chops \x1b[0m\n",
-	// timestamp() - f->dinner_data->start_time, f->index);
 	din = f->dinner_data;
 	res = -1;
 	if (get_bool(din->mtx_end, din->end_din))
 		return (0);
-	if (f->index % 2 == 0 && get_bool(din->mtx_end, din->end_din)) // das hier überdenken
+	if (f->index % 2 == 0 && !get_bool(din->mtx_end, din->end_din)) // das hier überdenken
 		res = grab_forks(f, f->left, right);
-	else if (f->index % 2 == 1 && get_bool(din->mtx_end, din->end_din))
+	else if (f->index % 2 == 1 && !get_bool(din->mtx_end, din->end_din))
 		res = grab_forks(f, right, f->left);
 	return (res); //dunno if needed
 }
@@ -96,16 +94,14 @@ void	*start_routine(void *arg)
 	while (!get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
 	{
 		dinner_synchro(f, f->index); 
-		sleeping(timestamp(), f);
-		thinking(timestamp(), f);
+		sleeping(f);
+		thinking(f);
 	}
 	return ((void *)f);
 }
 
 void	init_philo_th(philo_t *f, dinner_t *d, int i)
 {
-	set_long(f, &d->states[i][MEALS_EATEN], 0);
-	set_long(f, &d->states[i][LAST_EAT], d->start_time);
 	f->dinner_data = d;
 	f->index = i;
 	if (f->index == 0)
@@ -117,6 +113,8 @@ void	init_philo_th(philo_t *f, dinner_t *d, int i)
 	}
 	else
 		f->left = f->index - 1;
+	set_long(f, &d->states[i][MEALS_EATEN], 0);
+	set_long(f, &d->states[i][LAST_EAT], d->start_time);
 }
 
 int	prepare_din_sim(int nb_phil, dinner_t *d)
@@ -135,7 +133,7 @@ int	prepare_din_sim(int nb_phil, dinner_t *d)
 	}
 	start_phil_threads(d, f, th);
 	start_monitor(d);
-	cleanup_th(d, f, th, d->nb_phil - 1);
 	//cleanup mon
+	cleanup_th(d, f, th, d->nb_phil - 1);
 	return (0);
 }

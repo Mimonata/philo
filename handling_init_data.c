@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/13 07:56:54 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/13 19:02:51 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,24 +31,24 @@ void	init_dinner(dinner_t *d)
 	pthread_mutex_init(&d->mtx_end, NULL);
 }
 
-int	parse_input(int argc, char **argv, dinner_t d)
+int	parse_input(int argc, char **argv, dinner_t *d)
 {
-	d.nb_phil = ft_atol_phil(argv[1]);
-	if (d.nb_phil > 200)
+	d->nb_phil = ft_atol_phil(argv[1]);
+	if (d->nb_phil > 200)
 	{
 		printf("Number of philosophers cannot be greater than 200\n");
 		return (0);
 	}
-	d.time_die = ft_atol_phil(argv[2]);
-	d.time_eat = ft_atol_phil(argv[3]);
-	d.time_sleep = ft_atol_phil(argv[4]);
-	if (d.time_die < 60 || d.time_eat < 60 || d.time_sleep < 60)
+	d->time_die = ft_atol_phil(argv[2]);
+	d->time_eat = ft_atol_phil(argv[3]);
+	d->time_sleep = ft_atol_phil(argv[4]);
+	if (d->time_die < 60 || d->time_eat < 60 || d->time_sleep < 60)
 	{
 		printf("Durations must be at least 60 milliseconds.\n");
 		return (0);
 	}
 	if (argc == 6)
-		d.eating_times = ft_atol_phil(argv[5]);
+		d->eating_times = ft_atol_phil(argv[5]);
 	return (1);
 }
 
