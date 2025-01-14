@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handling_init_data.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/13 19:02:51 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/14 18:20:29 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,11 @@ int	allocate_resources(dinner_t *d)
 	i = 0;
 	d->mtx_forks = malloc((d->nb_phil) * sizeof(pthread_mutex_t));
 	if (!d->mtx_forks)
-		return(print_error("Memory allocation failed"));
+		return (print_error("Memory allocation failed"));
 	d->states = malloc((d->nb_phil) * sizeof(long[2]));
 	if (!d->states)
 		return (cleanup_din(d, "Memory allocation failed"));
-	d->mtx_states = malloc((d->nb_phil) * sizeof(pthread_mutex_t)); 
+	d->mtx_states = malloc((d->nb_phil) * sizeof(pthread_mutex_t));
 	if (!d->mtx_states)
 		return (cleanup_din(d, "Memory allocation failed"));
 	while (i < d->nb_phil)
@@ -97,8 +97,8 @@ void	set_bool(pthread_mutex_t mtx, bool *var, bool val)
 
 bool	get_bool(pthread_mutex_t mtx, bool var)
 {
-	bool res;
-	
+	bool	res;
+
 	pthread_mutex_lock(&mtx);
 	res = var;
 	pthread_mutex_unlock(&mtx);

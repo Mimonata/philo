@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/13 20:10:49 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/14 18:43:33 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	wait_all_threads(dinner_t *d)
 
 void	check_death(dinner_t *d)
 {
-	int			i;
+	int	i;
 
 	i = 0;
 	while (i < d->nb_phil && !get_bool(d->mtx_end, d->end_din))
@@ -30,8 +30,7 @@ void	check_death(dinner_t *d)
 		{
 			set_bool(d->mtx_end, &d->end_din, true);
 			pthread_mutex_lock(&d->mtx_print);
-			printf("\033[1;31m%ld %d has died\033[0m\n", timestamp()
-				- d->start_time, i);
+			printf("%ld %d has died\n", timestamp() - d->start_time, i);
 			pthread_mutex_unlock(&d->mtx_print);
 			break ;
 		}
@@ -42,8 +41,8 @@ void	check_death(dinner_t *d)
 
 int	check_meals(dinner_t *d)
 {
-	int			i;
-	int			fin;
+	int	i;
+	int	fin;
 
 	i = 0;
 	fin = 0;
@@ -66,7 +65,7 @@ int	check_meals(dinner_t *d)
 void	*create_monitor(void *arg)
 {
 	dinner_t	*d;
-	
+
 	d = (dinner_t *)arg;
 	while (!get_bool(d->mtx_end, d->end_din))
 	{
@@ -80,19 +79,14 @@ void	*create_monitor(void *arg)
 
 int	start_monitor(dinner_t *d)
 {
-	pthread_t	*mh;
-		
-	mh = malloc(sizeof(pthread_t));
-	if (!mh)
+	pthread_t	mh;
+	int			t;
+
+	if (pthread_create(&mh, NULL, &create_monitor, d) != 0)
 	{
 		set_bool(d->mtx_end, &d->end_din, true);
-		return(print_error("Memory allocation failed"));
+		return (print_error("**Cannot create monitor**"));
 	}
-	if (pthread_create(mh, NULL, &create_monitor, &d)!= 0)
-	{
-		set_bool(d->mtx_end, &d->end_din, true);
-		return(print_error("**Cannot create monitor**"));
-	}
-	//pthread_join(m, NULL);
-	return 1;
+	// pthread_join(m, NULL);
+	return (1);
 }

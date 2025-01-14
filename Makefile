@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+         #
+#    By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/14 21:17:34 by spitul            #+#    #+#              #
-#    Updated: 2025/01/10 21:50:03 by spitul           ###   ########.fr        #
+#    Updated: 2025/01/14 19:04:46 by spitul           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,7 +37,6 @@ clean:
 fclean: clean
 		rm -rf $(OBJDIR)
 		rm $(NAME)
-		rm *.gch 
 
 re: fclean all
 

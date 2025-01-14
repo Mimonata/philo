@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/13 20:13:24 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/14 19:02:41 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ void	printing(philo_t *f, int state)
 			- din->start_time, f->index);
 	else if ((state == TAKES_LEFTFORK || state == TAKES_RIGHTFORK)
 		&& (!get_bool(din->mtx_end, din->end_din)))
-		printf("\x1b[55;182;120;0;255m%ld %d has taken a fork\x1b[0m\n", timestamp()
-			- din->start_time, f->index);
+		printf("\x1b[55;182;120;0;255m%ld %d has taken a fork\x1b[0m\n",
+			timestamp() - din->start_time, f->index);
 	else if (state == DIED)
 		printf("\x1b[38;182;120;0;255m%ld %d has died\x1b[0m\n", timestamp()
 			- din->start_time, f->index);
@@ -47,14 +47,14 @@ void	printing(philo_t *f, int state)
 void	clean_mtx_array(pthread_mutex_t *mtx, int nb_phil)
 {
 	int	i;
-	
+
 	i = 0;
 	while (i < nb_phil)
 	{
 		pthread_mutex_destroy(&mtx[i]);
-		i ++;
+		i++;
 	}
-	free (mtx);
+	free(mtx);
 }
 
 int	cleanup_din(dinner_t *d, char *msg)
@@ -66,10 +66,10 @@ int	cleanup_din(dinner_t *d, char *msg)
 	pthread_mutex_destroy(&d->mtx_print);
 	pthread_mutex_destroy(&d->mtx_end);
 	if (d->states)
-		free (d->states);
+		free(d->states);
 	if (d->chops)
-		free (d->chops);
-	if (msg) //einfach nur ein printf, wenn nur am Anfang verwendet - TO LOOK AT
+		free(d->chops);
+	if (msg) // nur ein printf, wenn nur am Anfang verwendet- TO LOOK AT
 		printf("%s\n", msg);
 	return (0);
 }
@@ -78,19 +78,19 @@ void	cleanup_th(dinner_t *d, philo_t *f, pthread_t *th, int i)
 {
 	if (i > 0)
 	{
-		i --;
+		i--;
 		while (th && i >= 0)
 		{
 			pthread_join(th[i], NULL);
-			i --;
+			i--;
 		}
 	}
 	if (th)
-		free (th);
+		free(th);
 	if (f)
-		free (f);
+		free(f);
 	cleanup_din(d, NULL);
-	//return (0);
+	// return (0);
 }
 
 int	start_phil_threads(dinner_t *d, philo_t *f, pthread_t *th)
