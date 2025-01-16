@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/16 07:39:36 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/16 19:08:41 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void	*create_monitor(void *arg)
 	while (!get_bool(d->mtx_end, d->end_din))
 	{
 		check_death(d);
-		if (d->eating_times != -1)
+		if (d->eating_times != -2)
 			check_meals(d);
 		usleep(5000);
 	}

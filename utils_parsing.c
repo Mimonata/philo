@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_parsing.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:43:38 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/07 18:06:27 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/16 18:57:01 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	input_error(int err)
 		printf("Arguments can only be numbers\n");
 	else if (err == 3)
 		printf("Arguments cannot be bigger than INT_MAX\n");
-	return (0);
+	return (-1);
 }
 
 long	ft_atol_phil(const char *nptr)

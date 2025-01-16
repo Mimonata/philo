@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handling_init_data.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/16 07:12:47 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/16 18:59:44 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	init_dinner(dinner_t *d)
 {
 	d->nb_phil = 0;
-	d->eating_times = -1;
+	d->eating_times = -2;
 	d->time_die = 0;
 	d->time_eat = 0;
 	d->time_sleep = 0;
@@ -43,13 +43,16 @@ int	parse_input(int argc, char **argv, dinner_t *d)
 	d->time_die = ft_atol_phil(argv[2]);
 	d->time_eat = ft_atol_phil(argv[3]);
 	d->time_sleep = ft_atol_phil(argv[4]);
+	if (argc == 6)
+		d->eating_times = ft_atol_phil(argv[5]);
+	if (d->time_die == -1 || d->time_eat == -1 || d->time_sleep == -1
+		|| d->nb_phil == -1 || d->eating_times == -1)
+		return (0);
 	if (d->time_die < 60 || d->time_eat < 60 || d->time_sleep < 60)
 	{
 		printf("Durations must be at least 60 milliseconds.\n");
 		return (0);
 	}
-	if (argc == 6)
-		d->eating_times = ft_atol_phil(argv[5]);
 	return (1);
 }
 
