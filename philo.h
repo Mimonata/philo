@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/14 18:27:37 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/16 07:12:22 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ typedef struct dinner_s
 	int				one_dead;
 	bool			end_din;
 	bool			all_ready;
+	bool			mon_ready;
 	//{last_eat, meals_eaten}
 	long (*states)[2];
 	pthread_mutex_t	*mtx_forks;

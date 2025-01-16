@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handling_init_data.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/14 18:20:29 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/16 07:12:47 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	init_dinner(dinner_t *d)
 	d->one_dead = 0;
 	d->all_ready = false;
 	d->end_din = false;
+	d->mon_ready = false;
 	d->chops = NULL;
 	d->mtx_forks = NULL;
 	d->mtx_states = NULL;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/14 18:43:33 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/16 07:39:36 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,12 @@
 void	wait_all_threads(dinner_t *d)
 {
 	while (!d->all_ready)
+		;
+}
+
+void	wait_monitor(dinner_t *d)
+{
+	while (!get_bool(d->mtx_end, d->mon_ready))
 		;
 }
 
@@ -32,9 +38,10 @@ void	check_death(dinner_t *d)
 			pthread_mutex_lock(&d->mtx_print);
 			printf("%ld %d has died\n", timestamp() - d->start_time, i);
 			pthread_mutex_unlock(&d->mtx_print);
-			break ;
 		}
 		pthread_mutex_unlock(&d->mtx_states[i]);
+		if (get_bool(d->mtx_end, d->end_din))
+			break;
 		i++;
 	}
 }
@@ -67,6 +74,7 @@ void	*create_monitor(void *arg)
 	dinner_t	*d;
 
 	d = (dinner_t *)arg;
+	wait_monitor(d);
 	while (!get_bool(d->mtx_end, d->end_din))
 	{
 		check_death(d);
@@ -80,13 +88,12 @@ void	*create_monitor(void *arg)
 int	start_monitor(dinner_t *d)
 {
 	pthread_t	mh;
-	int			t;
-
+	
 	if (pthread_create(&mh, NULL, &create_monitor, d) != 0)
 	{
 		set_bool(d->mtx_end, &d->end_din, true);
 		return (print_error("**Cannot create monitor**"));
 	}
-	// pthread_join(m, NULL);
+	pthread_join(mh, NULL);
 	return (1);
 }

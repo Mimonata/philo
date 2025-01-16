@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threading.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
+/*   By: spitul <spitul@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/14 18:25:10 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/16 08:15:17 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,16 +54,26 @@ int	grab_forks(philo_t *f, int fork1, int fork2)
 	dinner_t	*din;
 
 	din = f->dinner_data;
-	if (!get_bool(din->mtx_end, din->end_din))
+	if (!get_bool(din->mtx_end, din->end_din) && (timestamp() - din->states[f->index][LAST_EAT] < din->time_die))
 	{
-		pthread_mutex_lock(&din->mtx_forks[fork1]);
-		printing(f, TAKES_LEFTFORK);
-		pthread_mutex_lock(&din->mtx_forks[fork2]);
-		printing(f, TAKES_RIGHTFORK);
-		eating(f, f->index);
-		pthread_mutex_unlock(&din->mtx_forks[fork1]);
-		pthread_mutex_unlock(&din->mtx_forks[fork2]);
-		return (1);
+		if (fork1 != fork2)
+		{
+			pthread_mutex_lock(&din->mtx_forks[fork1]);
+			printing(f, TAKES_LEFTFORK);
+			pthread_mutex_lock(&din->mtx_forks[fork2]);
+			printing(f, TAKES_RIGHTFORK);
+			eating(f, f->index);
+			pthread_mutex_unlock(&din->mtx_forks[fork1]);
+			pthread_mutex_unlock(&din->mtx_forks[fork2]);
+			return (1);
+		}
+		else 
+		{
+			pthread_mutex_lock(&din->mtx_forks[fork1]);
+			printing(f, TAKES_LEFTFORK);
+			usleep(f->dinner_data->time_die * 1000);
+			return (1);
+		}
 	}
 	else
 		return (0);
@@ -107,15 +117,16 @@ void	init_philo_th(philo_t *f, dinner_t *d, int i)
 {
 	f->dinner_data = d;
 	f->index = i;
-	if (f->index == 0)
-	{
-		if (d->nb_phil == 1)
-			f->left = -1;
-		else
-			f->left = d->nb_phil - 1;
-	}
-	else
-		f->left = f->index - 1;
+	f->left = (f->index - 1 + d->nb_phil) % d->nb_phil; 
+	// if (f->index == 0)
+	// {
+	// 	if (d->nb_phil == 1)
+	// 		f->left = -1;
+	// 	else
+	// 		f->left = d->nb_phil - 1;
+	// }
+	// else
+	// 	f->left = f->index - 1;
 	set_long(f, &d->states[i][MEALS_EATEN], 0);
 	set_long(f, &d->states[i][LAST_EAT], d->start_time);
 }
@@ -135,9 +146,8 @@ int	prepare_din_sim(int nb_phil, dinner_t *d)
 		return (cleanup_din(d, "Philo_t allocation failed"));
 	}
 	start_phil_threads(d, f, th);
-	usleep(1000);
+	//usleep(1000);
 	start_monitor(d);
-	// cleanup mon
 	cleanup_th(d, f, th, d->nb_phil - 1);
 	return (0);
 }
