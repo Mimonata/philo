@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/17 20:15:12 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/19 20:01:48 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,19 @@ void	printing(philo_t *f, int state)
 	pthread_mutex_lock(&din->mtx_print);
 	if (state == EATING && !get_bool(din->mtx_end, din->end_din))
 		printf("\x1b[38;2;120;0;255m%ld %d is eating\x1b[0m\n", timestamp()
-			- din->start_time, (f->index + 1));
+			- din->start_time, (f->index));
 	else if (state == SLEEPING && !get_bool(din->mtx_end, din->end_din))
-		printf("%ld %d is sleeping\n", timestamp() - din->start_time, (f->index
-				+ 1));
+		printf("%ld %d is sleeping\n", timestamp() - din->start_time,
+			(f->index));
 	else if (state == THINKING && !get_bool(din->mtx_end, din->end_din))
-		printf("%ld %d is thinking\n", timestamp() - din->start_time, (f->index
-				+ 1));
+		printf("%ld %d is thinking\n", timestamp() - din->start_time,
+			(f->index));
 	else if ((state == TAKES_LEFTFORK || state == TAKES_RIGHTFORK)
 		&& (!get_bool(din->mtx_end, din->end_din)))
 		printf("%ld %d has taken a fork\n", timestamp() - din->start_time,
-			(f->index + 1));
+			(f->index));
 	else if (state == DIED)
-		printf("%ld %d has died\n", timestamp() - din->start_time, (f->index
-				+ 1));
+		printf("%ld %d has died\n", timestamp() - din->start_time, (f->index));
 	pthread_mutex_unlock(&din->mtx_print);
 }
 

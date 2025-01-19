@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/16 18:59:44 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/19 19:14:52 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,11 @@ int	parse_input(int argc, char **argv, dinner_t *d)
 		return (0);
 	if (d->time_die < 60 || d->time_eat < 60 || d->time_sleep < 60)
 	{
-		printf("Durations must be at least 60 milliseconds.\n");
+		printf("\x1b[35mDurations must be at least 60 milliseconds.\x1b[0m\n");
 		return (0);
 	}
+	if (d->nb_phil == 0 || d->eating_times == 0)
+		return (0);
 	return (1);
 }
 
@@ -87,9 +89,19 @@ int	allocate_resources(dinner_t *d)
 
 void	set_long(philo_t *f, long *var, long value)
 {
-	pthread_mutex_lock(&f->dinner_data->mtx_states[f->index]);
+	pthread_mutex_lock(&f->dinner_data->mtx_states[f->index - 1]);
 	*var = value;
-	pthread_mutex_unlock(&f->dinner_data->mtx_states[f->index]);
+	pthread_mutex_unlock(&f->dinner_data->mtx_states[f->index - 1]);
+}
+
+long	get_long(philo_t *f, long var)
+{
+	long	value;
+
+	pthread_mutex_lock(&f->dinner_data->mtx_states[f->index - 1]);
+	value = var;
+	pthread_mutex_unlock(&f->dinner_data->mtx_states[f->index - 1]);
+	return (value);
 }
 
 void	set_bool(pthread_mutex_t mtx, bool *var, bool val)

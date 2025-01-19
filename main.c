@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 15:45:33 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/14 18:20:24 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/19 19:24:51 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ int	main(int argc, char **argv)
 	}
 	else
 		return (!print_error("Wrong input"));
-	if (allocate_resources(&d) && sim == 1)
-		prepare_din_sim(d.nb_phil, &d);
+	if (sim == 1)
+		{
+			if (allocate_resources(&d))
+				prepare_din_sim(d.nb_phil, &d);
+		}
 	return (0);
 }
