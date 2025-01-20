@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/17 20:06:53 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/20 19:21:47 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	wait_all_threads(dinner_t *d)
 {
-	while (!d->all_ready)
+	while (!get_bool(d->mtx_end, d->all_ready))
 		;
 }
 
@@ -59,7 +59,7 @@ int	check_meals(dinner_t *d)
 		if (d->states[i][MEALS_EATEN] >= d->eating_times)
 			fin++;
 		pthread_mutex_unlock(&d->mtx_states[i]);
-		i++;
+		i ++;
 	}
 	if (fin == d->nb_phil)
 	{
@@ -80,7 +80,7 @@ void	*create_monitor(void *arg)
 		check_death(d);
 		if (d->eating_times != -2)
 			check_meals(d);
-		usleep(5000);
+		usleep(3000);
 	}
 	return ((void *)d);
 }
@@ -94,7 +94,7 @@ int	start_monitor(dinner_t *d)
 		set_bool(d->mtx_end, &d->end_din, true);
 		return (print_error("**Cannot create monitor**"));
 	}
-	pthread_detach(mh);
-	// pthread_join(mh, NULL);
+	//pthread_detach(mh);
+	pthread_join(mh, NULL);
 	return (1);
 }

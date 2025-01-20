@@ -6,14 +6,14 @@
 #    By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/14 21:17:34 by spitul            #+#    #+#              #
-#    Updated: 2025/01/14 19:04:46 by spitul           ###   ########.fr        #
+#    Updated: 2025/01/20 19:37:38 by spitul           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= philo
 
-CC		= cc 
-CFLAGS	= -g -Wall -Wextra -Werror
+CC		= gcc 
+CFLAGS	= -lpthread -Wall -Wextra -Werror #-fsanitize=thread
 RM		= rm -f
 
 SRC		= handling_init_data.c main.c monitor.c threading.c utils.c utils_parsing.c

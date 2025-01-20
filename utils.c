@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/19 20:01:48 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/20 18:38:36 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ int	start_phil_threads(dinner_t *d, philo_t *f, pthread_t *th)
 		}
 		i++;
 	}
-	d->all_ready = true;
+	set_bool(d->mtx_print, &d->all_ready, true);
 	d->mon_ready = true;
 	return (1);
 }
