@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/20 19:36:47 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/20 20:10:12 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,8 @@ int	single_philo(philo_t *f)
 
 	din = f->dinner_data;
 	while (!get_bool(din->mtx_end, din->end_din) && (timestamp() - get_long(f,
-				din->states[f->index - 1][LAST_EAT]) < get_long(f, din->time_die)))
+				din->states[f->index - 1][LAST_EAT]) < get_long(f,
+				din->time_die)))
 	{
 		pthread_mutex_lock(&din->mtx_forks[f->index - 1]);
 		printing(f, TAKES_LEFTFORK);
