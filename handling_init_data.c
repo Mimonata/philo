@@ -6,13 +6,21 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/21 18:03:30 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/21 19:42:38 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_dinner(dinner_t *d)
+long	timestamp(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000L) + (tv.tv_usec / 1000L));
+}
+
+void	init_dinner(t_dinner *d)
 {
 	d->nb_phil = 0;
 	d->eating_times = -2;
@@ -32,7 +40,7 @@ void	init_dinner(dinner_t *d)
 	pthread_mutex_init(&d->mtx_end, NULL);
 }
 
-int	parse_input(int argc, char **argv, dinner_t *d)
+int	parse_input(int argc, char **argv, t_dinner *d)
 {
 	d->nb_phil = ft_atol_phil(argv[1]);
 	if (d->nb_phil > 200)
@@ -58,7 +66,7 @@ int	parse_input(int argc, char **argv, dinner_t *d)
 	return (1);
 }
 
-int	allocate_resources(dinner_t *d)
+int	allocate_resources(t_dinner *d)
 {
 	int	i;
 
@@ -87,36 +95,11 @@ int	allocate_resources(dinner_t *d)
 	return (1);
 }
 
-void	set_long(philo_t *f, long *var, long value)
+void	init_philo_th(t_philo *f, t_dinner *d, int i)
 {
-	pthread_mutex_lock(&f->dinner_data->mtx_states[f->index - 1]);
-	*var = value;
-	pthread_mutex_unlock(&f->dinner_data->mtx_states[f->index - 1]);
-}
-
-long	get_long(philo_t *f, long *var)
-{
-	long	value;
-
-	pthread_mutex_lock(&f->dinner_data->mtx_states[f->index - 1]);
-	value = *var;
-	pthread_mutex_unlock(&f->dinner_data->mtx_states[f->index - 1]);
-	return (value);
-}
-
-void	set_bool(pthread_mutex_t *mtx, bool *var, bool val)
-{
-	pthread_mutex_lock(mtx);
-	*var = val;
-	pthread_mutex_unlock(mtx);
-}
-
-bool	get_bool(pthread_mutex_t *mtx, bool *value)
-{
-	bool	res;
-
-	pthread_mutex_lock(mtx);
-	res = *value;
-	pthread_mutex_unlock(mtx);
-	return (res);
+	f->dinner_data = d;
+	f->index = i + 1;
+	f->left = f->index % d->nb_phil;
+	set_long(f, &d->states[i][MEALS_EATEN], 0);
+	set_long(f, &d->states[i][LAST_EAT], d->start_time);
 }

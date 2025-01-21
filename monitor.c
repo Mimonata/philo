@@ -6,45 +6,19 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/21 17:59:44 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/21 19:55:19 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	wait_all_threads(dinner_t *d)
-{
-	bool	ready;
-
-	ready = false;
-	while (!ready)
-	{
-		ready = get_bool(&d->mtx_print, &d->all_ready);
-		usleep(100);
-	}
-}
-
-// void	wait_all_threads(dinner_t *d)
-// {
-// 	bool	ready;
-
-// 	do
-// 	{
-// 		pthread_mutex_lock(&d->mtx_print);
-// 		ready = d->all_ready;
-// 		pthread_mutex_unlock(&d->mtx_print);
-// 		if (!ready)
-// 			usleep(100);
-// 	} while (!ready);
-// }
-
-void	wait_monitor(dinner_t *d)
+static void	wait_monitor(t_dinner *d)
 {
 	while (!get_bool(&d->mtx_end, &d->mon_ready))
 		;
 }
 
-void	check_death(dinner_t *d)
+void	check_death(t_dinner *d)
 {
 	int	i;
 
@@ -66,7 +40,7 @@ void	check_death(dinner_t *d)
 	}
 }
 
-int	check_meals(dinner_t *d)
+int	check_meals(t_dinner *d)
 {
 	int	i;
 	int	fin;
@@ -91,9 +65,9 @@ int	check_meals(dinner_t *d)
 
 void	*create_monitor(void *arg)
 {
-	dinner_t	*d;
+	t_dinner	*d;
 
-	d = (dinner_t *)arg;
+	d = (t_dinner *)arg;
 	wait_monitor(d);
 	while (!get_bool(&d->mtx_end, &d->end_din))
 	{
@@ -105,7 +79,7 @@ void	*create_monitor(void *arg)
 	return ((void *)d);
 }
 
-int	start_monitor(dinner_t *d)
+int	start_monitor(t_dinner *d)
 {
 	pthread_t	mh;
 
@@ -114,7 +88,6 @@ int	start_monitor(dinner_t *d)
 		set_bool(&d->mtx_end, &d->end_din, true);
 		return (print_error("**Cannot create monitor**"));
 	}
-	// pthread_detach(mh);
 	pthread_join(mh, NULL);
 	return (1);
 }
