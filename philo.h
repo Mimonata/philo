@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 21:17:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/20 20:10:29 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/21 18:03:39 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,9 @@ int					dinner_synchro(philo_t *f, int right);
 
 void				printing(philo_t *f, int state);
 void				set_long(philo_t *f, long *var, long value);
-long				get_long(philo_t *f, long var);
-bool				get_bool(pthread_mutex_t mtx, bool var);
-void				set_bool(pthread_mutex_t mtx, bool *var, bool val);
+long				get_long(philo_t *f, long *var);
+bool				get_bool(pthread_mutex_t *mtx, bool *value);
+void				set_bool(pthread_mutex_t *mtx, bool *var, bool val);
 int					print_error(char *msg);
 int					cleanup_din(dinner_t *d, char *msg);
 void				cleanup_th(dinner_t *d, philo_t *f, pthread_t *th, int i);

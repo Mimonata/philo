@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:05:50 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/20 18:38:36 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/21 18:02:02 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,17 @@ void	printing(philo_t *f, int state)
 
 	din = f->dinner_data;
 	pthread_mutex_lock(&din->mtx_print);
-	if (state == EATING && !get_bool(din->mtx_end, din->end_din))
+	if (state == EATING && !get_bool(&din->mtx_end, &din->end_din))
 		printf("\x1b[38;2;120;0;255m%ld %d is eating\x1b[0m\n", timestamp()
 			- din->start_time, (f->index));
-	else if (state == SLEEPING && !get_bool(din->mtx_end, din->end_din))
+	else if (state == SLEEPING && !get_bool(&din->mtx_end, &din->end_din))
 		printf("%ld %d is sleeping\n", timestamp() - din->start_time,
 			(f->index));
-	else if (state == THINKING && !get_bool(din->mtx_end, din->end_din))
+	else if (state == THINKING && !get_bool(&din->mtx_end, &din->end_din))
 		printf("%ld %d is thinking\n", timestamp() - din->start_time,
 			(f->index));
 	else if ((state == TAKES_LEFTFORK || state == TAKES_RIGHTFORK)
-		&& (!get_bool(din->mtx_end, din->end_din)))
+		&& (!get_bool(&din->mtx_end, &din->end_din)))
 		printf("%ld %d has taken a fork\n", timestamp() - din->start_time,
 			(f->index));
 	else if (state == DIED)
@@ -110,7 +110,10 @@ int	start_phil_threads(dinner_t *d, philo_t *f, pthread_t *th)
 		}
 		i++;
 	}
-	set_bool(d->mtx_print, &d->all_ready, true);
+	//  pthread_mutex_lock(&d->mtx_print);
+    // d->all_ready = true;
+    // pthread_mutex_unlock(&d->mtx_print);
+	set_bool(&d->mtx_print, &d->all_ready, true);
 	d->mon_ready = true;
 	return (1);
 }

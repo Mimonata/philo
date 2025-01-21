@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/philo",
-            "args": ["1", "400", "100", "100", "3"], // Adjust philosopher arguments as needed
+            "args": ["3", "400", "100", "100"], // Adjust philosopher arguments as needed
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/16 16:49:28 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/20 20:10:12 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/21 18:04:40 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	thinking(philo_t *f)
 
 	din = f->dinner_data;
 	time_think = 0;
-	if (!get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
+	if (!get_bool(&f->dinner_data->mtx_end, &f->dinner_data->end_din))
 		printing(f, THINKING);
 	if (f->dinner_data->nb_phil % 2 == 1)
 	{
@@ -39,10 +39,10 @@ void	thinking(philo_t *f)
 }
 void	sleeping(philo_t *f)
 {
-	if (!get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
+	if (!get_bool(&f->dinner_data->mtx_end, &f->dinner_data->end_din))
 		printing(f, SLEEPING);
 	usleep(f->dinner_data->time_sleep * 1000); // what happens if
-	if (get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
+	if (get_bool(&f->dinner_data->mtx_end, &f->dinner_data->end_din))
 		return ;
 }
 
@@ -53,10 +53,7 @@ void	eating(philo_t *f, int right)
 	set_long(f, &f->dinner_data->states[right][MEALS_EATEN],
 		f->dinner_data->states[right][MEALS_EATEN] + 1);
 	usleep(f->dinner_data->time_eat * 1000);
-	// while (timestamp() - time < f->dinner_data->time_eat
-	// 	&& !get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
-	// 	usleep(1000);
-	if (get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
+	if (get_bool(&f->dinner_data->mtx_end, &f->dinner_data->end_din))
 		// dunno ob das nötig, wahrscheinlich nicht
 		return ;
 }
@@ -66,8 +63,8 @@ int	grab_forks(philo_t *f, int fork1, int fork2)
 	dinner_t	*din;
 
 	din = f->dinner_data;
-	if (!get_bool(din->mtx_end, din->end_din) && (timestamp() - get_long(f,
-				din->states[f->index - 1][LAST_EAT]) < din->time_die))
+	if (!get_bool(&din->mtx_end, &din->end_din) && (timestamp() - get_long(f,
+				&din->states[f->index - 1][LAST_EAT]) < din->time_die))
 	{
 		pthread_mutex_lock(&din->mtx_forks[fork1]);
 		printing(f, TAKES_LEFTFORK);
@@ -85,16 +82,16 @@ int	single_philo(philo_t *f)
 	dinner_t	*din;
 
 	din = f->dinner_data;
-	while (!get_bool(din->mtx_end, din->end_din) && (timestamp() - get_long(f,
-				din->states[f->index - 1][LAST_EAT]) < get_long(f,
-				din->time_die)))
+	while (!get_bool(&din->mtx_end, &din->end_din) && (timestamp() - get_long(f,
+				&din->states[f->index - 1][LAST_EAT]) < get_long(f,
+				&din->time_die)))
 	{
 		pthread_mutex_lock(&din->mtx_forks[f->index - 1]);
 		printing(f, TAKES_LEFTFORK);
 		usleep(din->time_die * 1000);
 		pthread_mutex_unlock(&din->mtx_forks[f->index - 1]);
 	}
-	// set_bool(din->mtx_end, &din->end_din, true);
+	// set_bool(&din->mtx_end, &din->end_din, true);
 	return (1);
 }
 
@@ -105,11 +102,11 @@ int	dinner_synchro(philo_t *f, int right)
 
 	din = f->dinner_data;
 	res = -1;
-	if (get_bool(din->mtx_end, din->end_din))
+	if (get_bool(&din->mtx_end, &din->end_din))
 		return (0);
-	if (f->index % 2 == 0 && !get_bool(din->mtx_end, din->end_din))
+	if (f->index % 2 == 0 && !get_bool(&din->mtx_end, &din->end_din))
 		res = grab_forks(f, f->left, right);
-	else if (f->index % 2 == 1 && !get_bool(din->mtx_end, din->end_din))
+	else if (f->index % 2 == 1 && !get_bool(&din->mtx_end, &din->end_din))
 		res = grab_forks(f, right, f->left);
 	return (res); // dunno if needed
 }
@@ -129,7 +126,7 @@ void	*start_routine(void *arg)
 		single_philo(f);
 		return ((void *)f);
 	}
-	while (!get_bool(f->dinner_data->mtx_end, f->dinner_data->end_din))
+	while (!get_bool(&f->dinner_data->mtx_end, &f->dinner_data->end_din))
 	{
 		dinner_synchro(f, right);
 		sleeping(f);

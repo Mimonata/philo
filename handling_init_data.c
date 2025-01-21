@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 13:08:44 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/19 19:14:52 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/21 18:03:30 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,29 +94,29 @@ void	set_long(philo_t *f, long *var, long value)
 	pthread_mutex_unlock(&f->dinner_data->mtx_states[f->index - 1]);
 }
 
-long	get_long(philo_t *f, long var)
+long	get_long(philo_t *f, long *var)
 {
 	long	value;
 
 	pthread_mutex_lock(&f->dinner_data->mtx_states[f->index - 1]);
-	value = var;
+	value = *var;
 	pthread_mutex_unlock(&f->dinner_data->mtx_states[f->index - 1]);
 	return (value);
 }
 
-void	set_bool(pthread_mutex_t mtx, bool *var, bool val)
+void	set_bool(pthread_mutex_t *mtx, bool *var, bool val)
 {
-	pthread_mutex_lock(&mtx);
+	pthread_mutex_lock(mtx);
 	*var = val;
-	pthread_mutex_unlock(&mtx);
+	pthread_mutex_unlock(mtx);
 }
 
-bool	get_bool(pthread_mutex_t mtx, bool var)
+bool	get_bool(pthread_mutex_t *mtx, bool *value)
 {
 	bool	res;
 
-	pthread_mutex_lock(&mtx);
-	res = var;
-	pthread_mutex_unlock(&mtx);
+	pthread_mutex_lock(mtx);
+	res = *value;
+	pthread_mutex_unlock(mtx);
 	return (res);
 }

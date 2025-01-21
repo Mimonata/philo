@@ -6,7 +6,7 @@
 /*   By: spitul <spitul@student.42berlin.de >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/08 16:22:04 by spitul            #+#    #+#             */
-/*   Updated: 2025/01/20 19:21:47 by spitul           ###   ########.fr       */
+/*   Updated: 2025/01/21 17:59:44 by spitul           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,33 @@
 
 void	wait_all_threads(dinner_t *d)
 {
-	while (!get_bool(d->mtx_end, d->all_ready))
-		;
+	bool	ready;
+
+	ready = false;
+	while (!ready)
+	{
+		ready = get_bool(&d->mtx_print, &d->all_ready);
+		usleep(100);
+	}
 }
+
+// void	wait_all_threads(dinner_t *d)
+// {
+// 	bool	ready;
+
+// 	do
+// 	{
+// 		pthread_mutex_lock(&d->mtx_print);
+// 		ready = d->all_ready;
+// 		pthread_mutex_unlock(&d->mtx_print);
+// 		if (!ready)
+// 			usleep(100);
+// 	} while (!ready);
+// }
 
 void	wait_monitor(dinner_t *d)
 {
-	while (!get_bool(d->mtx_end, d->mon_ready))
+	while (!get_bool(&d->mtx_end, &d->mon_ready))
 		;
 }
 
@@ -29,18 +49,18 @@ void	check_death(dinner_t *d)
 	int	i;
 
 	i = 0;
-	while (i < d->nb_phil && !get_bool(d->mtx_end, d->end_din))
+	while (i < d->nb_phil && !get_bool(&d->mtx_end, &d->end_din))
 	{
 		pthread_mutex_lock(&d->mtx_states[i]);
 		if (timestamp() - d->states[i][LAST_EAT] > d->time_die)
 		{
-			set_bool(d->mtx_end, &d->end_din, true);
+			set_bool(&d->mtx_end, &d->end_din, true);
 			pthread_mutex_lock(&d->mtx_print);
 			printf("%ld %d has died\n", timestamp() - d->start_time, i + 1);
 			pthread_mutex_unlock(&d->mtx_print);
 		}
 		pthread_mutex_unlock(&d->mtx_states[i]);
-		if (get_bool(d->mtx_end, d->end_din))
+		if (get_bool(&d->mtx_end, &d->end_din))
 			break ;
 		i++;
 	}
@@ -59,11 +79,11 @@ int	check_meals(dinner_t *d)
 		if (d->states[i][MEALS_EATEN] >= d->eating_times)
 			fin++;
 		pthread_mutex_unlock(&d->mtx_states[i]);
-		i ++;
+		i++;
 	}
 	if (fin == d->nb_phil)
 	{
-		set_bool(d->mtx_end, &d->end_din, true);
+		set_bool(&d->mtx_end, &d->end_din, true);
 		return (1);
 	}
 	return (0);
@@ -75,7 +95,7 @@ void	*create_monitor(void *arg)
 
 	d = (dinner_t *)arg;
 	wait_monitor(d);
-	while (!get_bool(d->mtx_end, d->end_din))
+	while (!get_bool(&d->mtx_end, &d->end_din))
 	{
 		check_death(d);
 		if (d->eating_times != -2)
@@ -91,10 +111,10 @@ int	start_monitor(dinner_t *d)
 
 	if (pthread_create(&mh, NULL, &create_monitor, d) != 0)
 	{
-		set_bool(d->mtx_end, &d->end_din, true);
+		set_bool(&d->mtx_end, &d->end_din, true);
 		return (print_error("**Cannot create monitor**"));
 	}
-	//pthread_detach(mh);
+	// pthread_detach(mh);
 	pthread_join(mh, NULL);
 	return (1);
 }
